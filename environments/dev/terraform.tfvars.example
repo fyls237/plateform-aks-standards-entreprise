@@ -1,0 +1,22 @@
+# ---------------------------------------------------------------------------
+# Dev Environment — Example Variable Values
+# Copy this file to terraform.tfvars and adjust to your environment
+# ---------------------------------------------------------------------------
+
+# subscription_id        = "00000000-0000-0000-0000-000000000000"
+# location               = "westeurope"
+# environment            = "dev"
+# project                = "aksplatform"
+# admin_group_object_ids = ["00000000-0000-0000-0000-000000000000"]
+
+# alert_email_receivers = [
+#   {
+#     name          = "platform-team"
+#     email_address = "platform-team@company.com"
+#   }
+# ]
+
+# tags = {
+#   CostCenter = "IT-12345"
+#   Owner      = "platform-team"
+# }

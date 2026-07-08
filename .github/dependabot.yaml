@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Configuration for GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Configuration for Terraform (if using Terraform)
+  - package-ecosystem: "terraform"
+    directory: "/"
+    schedule:
+      interval: "daily"
