@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.0 (2026-07-08)
+
+
+### Features
+
+* **ci:** add release please dependabot ([41b9b16](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/41b9b16b3e3338964cbf6e2552a24eb382410e4e))
+* first setup infra modules ([e460e75](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/e460e7536b3734a0c5301e30ea47f85944bb9bd1))
+
 ## [Unreleased]
 
 ## [0.1.0] - 2026-07-07
