@@ -4,7 +4,7 @@
 
 output "action_group_id" {
   description = "Resource ID of the action group."
-  value       = var.enable_alerts ? azurerm_monitor_action_group.this[0].id : null
+  value       = var.enable_alerts ? azurerm_monitor_action_group.action_group[0].id : null
 }
 
 output "diagnostic_setting_id" {
@@ -14,5 +14,5 @@ output "diagnostic_setting_id" {
 
 output "alert_rule_ids" {
   description = "Map of alert rule names to their resource IDs."
-  value       = { for k, v in azurerm_monitor_metric_alert.this : k => v.id }
+  value       = { for k, v in azurerm_monitor_metric_alert.metric_alert : k => v.id }
 }

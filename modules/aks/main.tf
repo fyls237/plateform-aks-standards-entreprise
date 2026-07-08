@@ -3,7 +3,7 @@
 # Enterprise AKS Cluster with CNI Overlay, Workload Identity, Azure RBAC
 # ---------------------------------------------------------------------------
 
-resource "azurerm_kubernetes_cluster" "this" {
+resource "azurerm_kubernetes_cluster" "aks" {
   name                       = var.cluster_name
   location                   = var.location
   resource_group_name        = var.resource_group_name
@@ -140,11 +140,11 @@ resource "azurerm_kubernetes_cluster" "this" {
 # Additional Node Pools
 # ---------------------------------------------------------------------------
 
-resource "azurerm_kubernetes_cluster_node_pool" "this" {
+resource "azurerm_kubernetes_cluster_node_pool" "node_pool" {
   for_each = var.node_pools
 
   name                  = each.key
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.this.id
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
   vm_size               = each.value.vm_size
   node_count            = each.value.auto_scaling_enabled ? null : each.value.node_count
   min_count             = each.value.auto_scaling_enabled ? each.value.min_count : null
@@ -187,5 +187,5 @@ resource "azurerm_role_assignment" "cluster_rg_contributor" {
 
   scope                = var.resource_group_id
   role_definition_name = "Contributor"
-  principal_id         = azurerm_kubernetes_cluster.this.identity[0].principal_id
+  principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 }

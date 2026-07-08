@@ -3,7 +3,7 @@
 # Azure Key Vault with RBAC, Private Endpoint, Diagnostics
 # ---------------------------------------------------------------------------
 
-resource "azurerm_key_vault" "this" {
+resource "azurerm_key_vault" "key_vault" {
   name                = var.name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -33,7 +33,7 @@ resource "azurerm_key_vault" "this" {
 # Private Endpoint
 # ---------------------------------------------------------------------------
 
-resource "azurerm_private_endpoint" "this" {
+resource "azurerm_private_endpoint" "private_endpoint" {
   count = var.enable_private_endpoint ? 1 : 0
 
   name                = "${var.name}-pe"
@@ -43,7 +43,7 @@ resource "azurerm_private_endpoint" "this" {
 
   private_service_connection {
     name                           = "${var.name}-psc"
-    private_connection_resource_id = azurerm_key_vault.this.id
+    private_connection_resource_id = azurerm_key_vault.key_vault.id
     is_manual_connection           = false
     subresource_names              = ["vault"]
   }
@@ -68,7 +68,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   count = var.enable_diagnostics ? 1 : 0
 
   name                       = "${var.name}-diag"
-  target_resource_id         = azurerm_key_vault.this.id
+  target_resource_id         = azurerm_key_vault.key_vault.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   enabled_log {
