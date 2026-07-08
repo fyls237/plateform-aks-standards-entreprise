@@ -77,8 +77,6 @@ resource "azurerm_kubernetes_cluster" "this" {
     temporary_name_for_rotation  = var.default_node_pool.temporary_name_for_rotation
     vnet_subnet_id               = var.vnet_subnet_id
     node_labels                  = var.default_node_pool.node_labels
-    node_taints                  = length(var.default_node_pool.node_taints) > 0 ? var.default_node_pool.node_taints : null
-
     upgrade_settings {
       max_surge                     = var.default_node_pool.upgrade_settings.max_surge
       drain_timeout_in_minutes      = var.default_node_pool.upgrade_settings.drain_timeout_in_minutes

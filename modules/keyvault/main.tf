@@ -79,8 +79,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
     category = "AzurePolicyEvaluationDetails"
   }
 
-  metric {
+  enabled_metric {
     category = "AllMetrics"
-    enabled  = true
   }
 }

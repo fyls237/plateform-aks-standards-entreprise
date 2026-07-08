@@ -6,7 +6,7 @@
 
 > A **production-grade, enterprise-ready** Azure Kubernetes Service (AKS) platform foundation built with Terraform. Designed by platform engineers, for platform engineers.
 
-This is not a tutorial repository. It is a reusable, modular, and maintainable platform starter that mirrors what a Cloud Platform Team would operate inside a large enterprise.
+This is a reusable, modular, and maintainable platform starter that mirrors what a Cloud Platform Team would operate inside a large enterprise.
 
 ---
 
@@ -67,7 +67,7 @@ graph TB
             end
 
             subgraph "DNS"
-                DNS["🌍 Private DNS Zones"]
+                PDNS["🌍 Private DNS Zones"]
             end
         end
     end
@@ -82,7 +82,7 @@ graph TB
     KV -.->|Private Endpoint| SNET_PE
     AKS -.->|Container Insights| LAW
     LAW --> MON
-    DNS --> VNET
+    PDNS --> VNET
 
     style AKS fill:#326CE5,stroke:#fff,color:#fff
     style ACR fill:#0078D4,stroke:#fff,color:#fff

@@ -222,7 +222,6 @@ variable "default_node_pool" {
       node_soak_duration_in_minutes = optional(number, 0)
     }), {})
     node_labels = optional(map(string), {})
-    node_taints = optional(list(string), [])
     tags        = optional(map(string), {})
   })
   default = {}

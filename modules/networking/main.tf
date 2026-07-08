@@ -3,7 +3,7 @@
 # Provisions VNet, Subnets, NSGs, Route Tables, and Diagnostic Settings
 # ---------------------------------------------------------------------------
 
-resource "azurerm_virtual_network" "this" {
+resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -17,12 +17,12 @@ resource "azurerm_virtual_network" "this" {
 # Subnets
 # ---------------------------------------------------------------------------
 
-resource "azurerm_subnet" "this" {
+resource "azurerm_subnet" "subnet" {
   for_each = var.subnets
 
   name                                          = each.key
   resource_group_name                           = var.resource_group_name
-  virtual_network_name                          = azurerm_virtual_network.this.name
+  virtual_network_name                          = azurerm_virtual_network.vnet.name
   address_prefixes                              = each.value.address_prefixes
   service_endpoints                             = length(each.value.service_endpoints) > 0 ? each.value.service_endpoints : null
   private_endpoint_network_policies             = each.value.private_endpoint_network_policies
@@ -46,7 +46,7 @@ resource "azurerm_subnet" "this" {
 # Network Security Groups
 # ---------------------------------------------------------------------------
 
-resource "azurerm_network_security_group" "this" {
+resource "azurerm_network_security_group" "nsg" {
   for_each = var.network_security_groups
 
   name                = each.key
@@ -74,24 +74,24 @@ resource "azurerm_network_security_group" "this" {
   tags = var.tags
 }
 
-resource "azurerm_subnet_network_security_group_association" "this" {
+resource "azurerm_subnet_network_security_group_association" "subnet_network_security_group_association" {
   for_each = var.network_security_groups
 
-  subnet_id                 = azurerm_subnet.this[each.value.subnet_key].id
-  network_security_group_id = azurerm_network_security_group.this[each.key].id
+  subnet_id                 = azurerm_subnet.subnet[each.value.subnet_key].id
+  network_security_group_id = azurerm_network_security_group.nsg[each.key].id
 }
 
 # ---------------------------------------------------------------------------
 # Route Tables
 # ---------------------------------------------------------------------------
 
-resource "azurerm_route_table" "this" {
+resource "azurerm_route_table" "route_table" {
   for_each = var.route_tables
 
   name                          = each.key
   location                      = var.location
   resource_group_name           = var.resource_group_name
-  disable_bgp_route_propagation = each.value.disable_bgp_route_propagation
+  bgp_route_propagation_enabled = !each.value.disable_bgp_route_propagation
 
   dynamic "route" {
     for_each = each.value.routes
@@ -107,11 +107,11 @@ resource "azurerm_route_table" "this" {
   tags = var.tags
 }
 
-resource "azurerm_subnet_route_table_association" "this" {
+resource "azurerm_subnet_route_table_association" "subnet_route_table_association" {
   for_each = var.route_tables
 
-  subnet_id      = azurerm_subnet.this[each.value.subnet_key].id
-  route_table_id = azurerm_route_table.this[each.key].id
+  subnet_id      = azurerm_subnet.subnet[each.value.subnet_key].id
+  route_table_id = azurerm_route_table.route_table[each.key].id
 }
 
 # ---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ resource "azurerm_monitor_diagnostic_setting" "nsg" {
   for_each = var.enable_diagnostics ? var.network_security_groups : {}
 
   name                       = "${each.key}-diag"
-  target_resource_id         = azurerm_network_security_group.this[each.key].id
+  target_resource_id         = azurerm_network_security_group.nsg[each.key].id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   enabled_log {
