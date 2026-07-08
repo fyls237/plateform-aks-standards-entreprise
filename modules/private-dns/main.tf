@@ -3,7 +3,7 @@
 # Private DNS Zones and Virtual Network Links
 # ---------------------------------------------------------------------------
 
-resource "azurerm_private_dns_zone" "this" {
+resource "azurerm_private_dns_zone" "private_dns_zone" {
   for_each = var.dns_zones
 
   name                = each.key
@@ -29,12 +29,12 @@ locals {
   vnet_links_map = { for link in local.vnet_links : link.key => link }
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_virtual_network_link" {
   for_each = local.vnet_links_map
 
   name                  = each.value.name
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.this[each.value.zone_key].name
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone[each.value.zone_key].name
   virtual_network_id    = each.value.virtual_network_id
   registration_enabled  = each.value.registration_enabled
 

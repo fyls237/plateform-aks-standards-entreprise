@@ -90,7 +90,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
 # Action Group
 # ---------------------------------------------------------------------------
 
-resource "azurerm_monitor_action_group" "this" {
+resource "azurerm_monitor_action_group" "action_group" {
   count = var.enable_alerts ? 1 : 0
 
   name                = var.action_group_name
@@ -113,7 +113,7 @@ resource "azurerm_monitor_action_group" "this" {
 # Metric Alerts
 # ---------------------------------------------------------------------------
 
-resource "azurerm_monitor_metric_alert" "this" {
+resource "azurerm_monitor_metric_alert" "metric_alert" {
   for_each = var.enable_alerts && var.aks_cluster_id != null ? local.effective_alert_rules : {}
 
   name                = each.key
@@ -133,7 +133,7 @@ resource "azurerm_monitor_metric_alert" "this" {
   }
 
   action {
-    action_group_id = azurerm_monitor_action_group.this[0].id
+    action_group_id = azurerm_monitor_action_group.action_group[0].id
   }
 
   tags = var.tags

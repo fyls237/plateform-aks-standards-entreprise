@@ -3,7 +3,7 @@
 # Azure Container Registry with Private Endpoint, Geo-replication, AcrPull
 # ---------------------------------------------------------------------------
 
-resource "azurerm_container_registry" "this" {
+resource "azurerm_container_registry" "acr" {
   name                          = var.name
   location                      = var.location
   resource_group_name           = var.resource_group_name
@@ -54,7 +54,7 @@ resource "azurerm_container_registry" "this" {
 resource "azurerm_role_assignment" "acr_pull" {
   count = var.aks_principal_id != null ? 1 : 0
 
-  scope                = azurerm_container_registry.this.id
+  scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = var.aks_principal_id
 }
@@ -63,7 +63,7 @@ resource "azurerm_role_assignment" "acr_pull" {
 # Private Endpoint
 # ---------------------------------------------------------------------------
 
-resource "azurerm_private_endpoint" "this" {
+resource "azurerm_private_endpoint" "private_endpoint" {
   count = var.enable_private_endpoint ? 1 : 0
 
   name                = "${var.name}-pe"
@@ -73,7 +73,7 @@ resource "azurerm_private_endpoint" "this" {
 
   private_service_connection {
     name                           = "${var.name}-psc"
-    private_connection_resource_id = azurerm_container_registry.this.id
+    private_connection_resource_id = azurerm_container_registry.acr.id
     is_manual_connection           = false
     subresource_names              = ["registry"]
   }
@@ -98,7 +98,7 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
   count = var.enable_diagnostics ? 1 : 0
 
   name                       = "${var.name}-diag"
-  target_resource_id         = azurerm_container_registry.this.id
+  target_resource_id         = azurerm_container_registry.acr.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   enabled_log {
