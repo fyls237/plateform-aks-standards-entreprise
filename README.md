@@ -4,7 +4,7 @@
 [![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.12-7B42BC?logo=terraform)](https://www.terraform.io)
 [![Azure](https://img.shields.io/badge/Azure-AKS-0078D4?logo=microsoftazure)](https://azure.microsoft.com/services/kubernetes-service/)
 
-> A **production-grade, enterprise-ready** Azure Kubernetes Service (AKS) platform foundation built with Terraform. Designed by platform engineers, for platform engineers.
+> A **production-grade, enterprise-ready** Azure Kubernetes Service (AKS) platform foundation built with Terraform.
 
 This is a reusable, modular, and maintainable platform starter that mirrors what a Cloud Platform Team would operate inside a large enterprise.
 
@@ -457,8 +457,8 @@ Key decisions documented as ADRs in [docs/decisions.md](docs/decisions.md):
 
 See [docs/roadmap.md](docs/roadmap.md) for the full roadmap.
 
-**Short-term**: FluxCD/ArgoCD, Azure Policy, Defender for Cloud  
-**Medium-term**: Prometheus/Grafana, cert-manager, ExternalDNS, Velero  
+**Short-term**: FluxCD/ArgoCD, Azure Policy, Defender for Cloud
+**Medium-term**: Prometheus/Grafana, cert-manager, ExternalDNS, Velero
 **Long-term**: Multi-region, Service Mesh, Backstage, Crossplane
 
 ---
@@ -488,3 +488,29 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 [Architecture](docs/architecture.md) · [Security](docs/security.md) · [Deployment](docs/deployment.md) · [Roadmap](docs/roadmap.md)
 
 </div>
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->

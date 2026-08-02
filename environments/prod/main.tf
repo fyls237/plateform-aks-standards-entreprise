@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
 # Production Environment — Main
-# Fully hardened: private cluster, private endpoints, resource locks, 
+# Fully hardened: private cluster, private endpoints, resource locks,
 # full monitoring with alerts, maintenance windows, zone-redundant
 # ---------------------------------------------------------------------------
 
