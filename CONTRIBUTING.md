@@ -1,131 +1,131 @@
-# Guide de Contribution
+# Contributing Guide
 
-Tout d'abord, merci de prendre le temps de contribuer à ce projet ! Ce document établit les lignes directrices pour contribuer au dépôt **plateform-aks-standards-entreprise**.
+First off, thank you for taking the time to contribute to this project! This document establishes the guidelines for contributing to the **plateform-aks-standards-entreprise** repository.
 
-Ces directives sont conçues pour faciliter le processus de contribution, assurer la qualité du code Terraform et maintenir une infrastructure en tant que code (IaC) robuste et sécurisée.
+These guidelines are designed to facilitate the contribution process, ensure Terraform code quality, and maintain a robust and secure infrastructure as code (IaC).
 
-## Table des Matières
+## Table of Contents
 
-1. [Pré-requis](#pré-requis)
-2. [Processus de Développement](#processus-de-développement)
-3. [Stratégie de Branche (Branching Strategy)](#stratégie-de-branche)
-4. [Standards de Code (Terraform)](#standards-de-code-terraform)
-5. [Conventions de Commit](#conventions-de-commit)
-6. [Processus de Pull Request (PR)](#processus-de-pull-request)
-7. [Sécurité et Conformité](#sécurité-et-conformité)
+1. [Prerequisites](#prerequisites)
+2. [Development Process](#development-process)
+3. [Branching Strategy](#branching-strategy)
+4. [Coding Standards (Terraform)](#coding-standards-terraform)
+5. [Commit Conventions](#commit-conventions)
+6. [Pull Request (PR) Process](#pull-request-process)
+7. [Security and Compliance](#security-and-compliance)
 
 ---
 
-## Pré-requis
+## Prerequisites
 
-Pour contribuer à ce projet, vous devez installer les outils suivants sur votre poste de travail :
+To contribute to this project, you must have the following tools installed on your local machine:
 
-- [Terraform](https://developer.hashicorp.com/terraform/downloads) (respecter la version minimale définie dans les fichiers `versions.tf`)
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) (respect the minimum version defined in the `versions.tf` files)
 - [Azure CLI (az)](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Git](https://git-scm.com/downloads)
-- [Make](https://www.gnu.org/software/make/) (utilisé pour l'orchestration des scripts de validation)
-- [pre-commit](https://pre-commit.com/) (pour l'exécution des hooks locaux)
-- [terraform-docs](https://terraform-docs.io/) (pour la génération automatique de la documentation)
-- [tflint](https://github.com/terraform-linters/tflint) (pour l'analyse statique)
-- [tfsec](https://github.com/aquasecurity/tfsec) ou [Trivy](https://trivy.dev/) (pour la sécurité du code)
+- [Make](https://www.gnu.org/software/make/) (used for orchestrating validation scripts)
+- [pre-commit](https://pre-commit.com/) (for running local hooks)
+- [terraform-docs](https://terraform-docs.io/) (for automatic documentation generation)
+- [tflint](https://github.com/terraform-linters/tflint) (for static analysis)
+- [tfsec](https://github.com/aquasecurity/tfsec) or [Trivy](https://trivy.dev/) (for code security)
 
-### Initialisation de l'environnement local
+### Local Environment Initialization
 
-1. Clonez le dépôt :
+1. Clone the repository:
    ```bash
-   git clone <URL_DU_REPO>
+   git clone <REPO_URL>
    cd plateform-aks-standards-entreprise
    ```
 
-2. Installez les hooks pre-commit (fortement recommandé) :
+2. Install pre-commit hooks (highly recommended):
    ```bash
    pre-commit install
    ```
-   Cela garantira que votre code est formaté et vérifié avant chaque commit.
+   This ensures your code is formatted and checked before every commit.
 
 ---
 
-## Processus de Développement
+## Development Process
 
-Avant de soumettre des modifications, assurez-vous que votre code passe les validations locales.
+Before submitting any changes, make sure your code passes the local validations.
 
-Vous pouvez utiliser le `Makefile` ou les scripts du dossier `scripts/` pour valider votre code. Par exemple :
+You can use the `Makefile` or scripts in the `scripts/` directory to validate your code. For example:
 ```bash
-# Vérifier le formatage et valider les modules (ex: ./scripts/validate-all.sh)
+# Check formatting and validate modules (e.g., ./scripts/validate-all.sh)
 ./scripts/validate-all.sh
 ```
 
 ---
 
-## Stratégie de Branche
+## Branching Strategy
 
-Nous suivons une approche basée sur **GitHub Flow** / **Trunk-Based Development** adaptée pour l'infrastructure :
+We follow a **GitHub Flow** / **Trunk-Based Development** approach adapted for infrastructure:
 
-- `main` (ou `master`) : Branche principale. Elle doit toujours être dans un état déployable et stable. Le code sur cette branche représente l'infrastructure en production.
-- **Branches de fonctionnalités / correctifs** : Créez une branche à partir de `main` pour vos développements.
-  - Convention de nommage : `<type>/<issue-id-ou-description-courte>`
-  - Types : `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`
-  - Exemple : `feat/add-aks-private-cluster` ou `fix/update-node-pool-tags`
-
----
-
-## Standards de Code (Terraform)
-
-- **Formatage** : Le code doit toujours être formaté avec `terraform fmt`.
-- **Validation** : Le code doit passer `terraform validate`.
-- **Variables** : Toutes les variables doivent avoir une `description` et, si possible, un `type` strict et des blocs de `validation`.
-- **Outputs** : Les outputs doivent être clairement documentés.
-- **Documentation** : Utilisez `terraform-docs` pour maintenir les fichiers `README.md` des modules à jour. Les hooks pre-commit s'en chargeront automatiquement si configurés.
-- **Chemins et Noms** : Privilégiez le snake_case pour les noms de ressources, de variables et de fichiers Terraform (ex: `resource_group_name`).
+- `main` (or `master`): Main branch. It should always be in a deployable and stable state. The code on this branch represents the infrastructure in production.
+- **Feature / Fix branches**: Create a branch from `main` for your developments.
+  - Naming convention: `<type>/<issue-id-or-short-description>`
+  - Types: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`
+  - Example: `feat/add-aks-private-cluster` or `fix/update-node-pool-tags`
 
 ---
 
-## Conventions de Commit
+## Coding Standards (Terraform)
 
-Nous utilisons les [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/) pour générer automatiquement le CHANGELOG et gérer les versions sémantiques (SemVer).
+- **Formatting**: The code must always be formatted using `terraform fmt`.
+- **Validation**: The code must pass `terraform validate`.
+- **Variables**: All variables must have a `description` and, if possible, a strict `type` and `validation` blocks.
+- **Outputs**: Outputs must be clearly documented.
+- **Documentation**: Use `terraform-docs` to keep module `README.md` files up-to-date. The pre-commit hooks will handle this automatically if configured.
+- **Paths and Names**: Prefer snake_case for Terraform resource names, variable names, and file names (e.g., `resource_group_name`).
 
-**Format du commit :**
+---
+
+## Commit Conventions
+
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to automatically generate the CHANGELOG and manage semantic versioning (SemVer).
+
+**Commit format:**
 ```
-<type>[scope optionnel]: <description courte>
+<type>[optional scope]: <short description>
 
-[corps optionnel]
+[optional body]
 
-[pied de page optionnel]
+[optional footer]
 ```
 
-**Types autorisés :**
-- `feat` : Ajout d'une nouvelle fonctionnalité (ex: nouveau module Terraform).
-- `fix` : Correction d'un bug (ex: correction d'une politique IAM).
-- `docs` : Modification de la documentation uniquement.
-- `style` : Changements qui n'affectent pas le sens du code (espaces, formatage, etc.).
-- `refactor` : Modification du code qui ne corrige ni un bug ni n'ajoute une fonctionnalité.
-- `test` : Ajout ou modification de tests.
-- `chore` : Mise à jour des tâches de build, gestion des paquets, etc.
+**Allowed types:**
+- `feat`: Addition of a new feature (e.g., new Terraform module).
+- `fix`: Bug fix (e.g., IAM policy correction).
+- `docs`: Documentation changes only.
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, etc.).
+- `refactor`: A code change that neither fixes a bug nor adds a feature.
+- `test`: Adding or modifying tests.
+- `chore`: Updating build tasks, package manager configs, etc.
 
-**Exemple :**
-`feat(aks): ajout du support pour Azure CNI Overlay`
-
----
-
-## Processus de Pull Request
-
-1. Poussez votre branche sur le dépôt distant.
-2. Ouvrez une Pull Request (PR) ciblant la branche `main`.
-3. **Titre de la PR** : Doit suivre la convention des commits (ex: `feat: add integration with Azure Key Vault`).
-4. **Description** : Remplissez le modèle de PR (s'il existe). Décrivez clairement le problème résolu et la solution apportée.
-5. **CI/CD** : Assurez-vous que tous les pipelines GitHub Actions (ou Azure DevOps) passent avec succès (tests tfsec, tflint, formatage, plan Terraform).
-6. **Revue de code** : Au moins une approbation (Approve) de la part d'un mainteneur ou d'un autre ingénieur plateforme est requise avant le merge.
-7. **Merge** : Privilégiez le `Squash and Merge` pour garder un historique Git propre sur la branche `main`.
+**Example:**
+`feat(aks): add support for Azure CNI Overlay`
 
 ---
 
-## Sécurité et Conformité
+## Pull Request Process
 
-Le code d'infrastructure doit respecter les standards de sécurité de l'entreprise :
+1. Push your branch to the remote repository.
+2. Open a Pull Request (PR) targeting the `main` branch.
+3. **PR Title**: Must follow the commit conventions (e.g., `feat: add integration with Azure Key Vault`).
+4. **Description**: Fill out the PR template (if one exists). Clearly describe the problem solved and the solution provided.
+5. **CI/CD**: Ensure all GitHub Actions (or Azure DevOps) pipelines pass successfully (tfsec, tflint, formatting, Terraform plan).
+6. **Code Review**: At least one approval (Approve) from a maintainer or another platform engineer is required before merging.
+7. **Merge**: Prefer `Squash and Merge` to maintain a clean Git history on the `main` branch.
 
-- **Pas de secrets en clair** : N'ajoutez jamais de mots de passe, tokens ou clés dans le code. Utilisez Azure Key Vault et des références (Data Sources).
-- **Moindre Privilège** : Les attributions de rôles (RBAC) doivent être strictes et limiter l'accès au minimum nécessaire.
-- **Ressources Privées** : Dans la mesure du possible, évitez d'exposer les ressources sur des adresses IP publiques sans justification.
-- **Analyse statique** : Le code est scanné avec `tfsec` et/ou `checkov`. Les alertes bloquantes dans la CI devront être corrigées avant que la PR puisse être fusionnée.
+---
 
-Merci encore pour votre contribution à l'amélioration de la plateforme !
+## Security and Compliance
+
+Infrastructure code must adhere to enterprise security standards:
+
+- **No plain-text secrets**: Never commit passwords, tokens, or keys in the code. Use Azure Key Vault and Data Sources references.
+- **Least Privilege**: Role-based access control (RBAC) assignments must be strict and limit access to the absolute minimum necessary.
+- **Private Resources**: Whenever possible, avoid exposing resources on public IP addresses without justification.
+- **Static Analysis**: The code is scanned with `tfsec` and/or `checkov`. Blocking alerts in CI must be resolved before the PR can be merged.
+
+Thank you again for your contribution to improving the platform!

@@ -2,7 +2,7 @@
 
 ## ADR-001: Azure CNI Overlay over Traditional CNI
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -25,7 +25,7 @@ Use **Azure CNI Overlay** as the default network plugin.
 
 ## ADR-002: User-Assigned Managed Identity over System-Assigned
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -48,7 +48,7 @@ Use **User-Assigned Managed Identity** for the AKS cluster.
 
 ## ADR-003: Azure RBAC for Kubernetes over Native K8s RBAC
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -72,7 +72,7 @@ Use **Azure RBAC for Kubernetes** as the authorization mode.
 
 ## ADR-004: Premium ACR SKU as Default
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -96,7 +96,7 @@ Default to **Premium SKU** for all environments.
 
 ## ADR-005: Key Vault RBAC over Access Policies
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -120,7 +120,7 @@ Use **RBAC authorization** for Key Vault.
 
 ## ADR-006: AzureLinux over Ubuntu for Node OS
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context
@@ -144,7 +144,7 @@ Use **AzureLinux** as the default node OS.
 
 ## ADR-007: Local Module Sources over Registry Modules
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-07-07
 
 ### Context

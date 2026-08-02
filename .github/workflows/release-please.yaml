@@ -19,4 +19,3 @@ jobs:
           release-type: terraform-module
           token: ${{ secrets.GITHUB_TOKEN }}
           target-path: modules/
-

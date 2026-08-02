@@ -2,19 +2,19 @@
 
 ## Current State (v0.1.0)
 
-✅ AKS cluster with Azure CNI Overlay  
-✅ Managed Identity + Workload Identity  
-✅ Azure RBAC for Kubernetes  
-✅ Private cluster support  
-✅ Multi-environment (dev/test/preprod/prod)  
-✅ Azure Container Registry (Premium)  
-✅ Key Vault with RBAC  
-✅ Log Analytics + Container Insights  
-✅ Metric alerts  
-✅ Private endpoints  
-✅ NSGs and route tables  
-✅ Private DNS zones  
-✅ GitHub Actions CI/CD  
+✅ AKS cluster with Azure CNI Overlay
+✅ Managed Identity + Workload Identity
+✅ Azure RBAC for Kubernetes
+✅ Private cluster support
+✅ Multi-environment (dev/test/preprod/prod)
+✅ Azure Container Registry (Premium)
+✅ Key Vault with RBAC
+✅ Log Analytics + Container Insights
+✅ Metric alerts
+✅ Private endpoints
+✅ NSGs and route tables
+✅ Private DNS zones
+✅ GitHub Actions CI/CD
 
 ## Short-term (v0.2.0)
 
