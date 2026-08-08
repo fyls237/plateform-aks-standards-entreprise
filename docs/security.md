@@ -2,13 +2,16 @@
 
 ## Identity Model
 
-### Cluster Identity
+### Cluster Identity (Control Plane)
 
 The AKS cluster uses a **User-Assigned Managed Identity** rather than a System-Assigned one:
 
-- **Lifecycle decoupling**: The identity persists independently of the cluster
-- **Pre-provisioned RBAC**: Roles can be assigned before the cluster exists
-- **Multi-cluster reuse**: The same identity can be shared if needed (though not recommended for isolation)
+- **Lifecycle decoupling**: The identity persists independently of the cluster.
+- **Pre-provisioned RBAC**: Roles can be assigned before the cluster exists, preventing deployment race conditions.
+- **Least Privilege (Security)**: The identity must **never** be granted the `Contributor` role on the entire Resource Group. It should strictly receive:
+  - `Network Contributor` scoped only to the specific Subnet/VNet (to manage Load Balancers and IPs).
+  - `Managed Identity Operator` scoped to the Kubelet Identity (if required).
+  - `Private DNS Zone Contributor` scoped to the Private DNS Zone (for private clusters).
 
 ### Kubelet Identity
 
@@ -111,8 +114,8 @@ In production:
 
 The platform follows least privilege at every layer:
 
-1. **AKS identity**: Only `Contributor` on its resource group
-2. **Kubelet identity**: Only `AcrPull` on the Container Registry
+1. **AKS identity**: Only `Network Contributor` scoped explicitly to its Subnet (Never `Contributor` on the Resource Group)
+2. **Kubelet identity**: Only `AcrPull` on the specific Container Registry
 3. **Workload identities**: Scoped to specific resources (Key Vault secrets, Storage, etc.)
 4. **Network**: Default deny with explicit allows
 5. **Key Vault**: RBAC roles scoped to specific secrets/keys
