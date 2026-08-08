@@ -182,10 +182,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "node_pool" {
 # Role Assignment — Grant cluster identity rights over node resource group
 # ---------------------------------------------------------------------------
 
-resource "azurerm_role_assignment" "cluster_rg_contributor" {
-  count = var.identity_type == "UserAssigned" ? 1 : 0
+resource "azurerm_role_assignment" "cluster_network_contributor" {
+  count = var.identity_type == "SystemAssigned" ? 1 : 0
 
-  scope                = var.resource_group_id
-  role_definition_name = "Contributor"
+  scope                = var.vnet_subnet_id
+  role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 }

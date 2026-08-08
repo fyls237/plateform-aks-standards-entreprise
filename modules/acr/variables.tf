@@ -101,11 +101,6 @@ variable "private_dns_zone_id" {
   default     = null
 }
 
-variable "aks_principal_id" {
-  description = "Principal ID of the AKS kubelet identity. Used to grant AcrPull role."
-  type        = string
-  default     = null
-}
 
 variable "enable_diagnostics" {
   description = "Enable diagnostic settings for the Container Registry."

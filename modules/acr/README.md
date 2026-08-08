@@ -23,14 +23,12 @@ No modules.
 | [azurerm_container_registry.acr](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_registry) | resource |
 | [azurerm_monitor_diagnostic_setting.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_private_endpoint.private_endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) | resource |
-| [azurerm_role_assignment.acr_pull](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Enable admin user. Should be disabled in production; use managed identities instead. | `bool` | `false` | no |
-| <a name="input_aks_principal_id"></a> [aks\_principal\_id](#input\_aks\_principal\_id) | Principal ID of the AKS kubelet identity. Used to grant AcrPull role. | `string` | `null` | no |
 | <a name="input_enable_diagnostics"></a> [enable\_diagnostics](#input\_enable\_diagnostics) | Enable diagnostic settings for the Container Registry. | `bool` | `false` | no |
 | <a name="input_enable_private_endpoint"></a> [enable\_private\_endpoint](#input\_enable\_private\_endpoint) | Create a private endpoint for the Container Registry. Requires Premium SKU. | `bool` | `false` | no |
 | <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | List of regions for geo-replication. Requires Premium SKU. | <pre>list(object({<br/>    location                = string<br/>    zone_redundancy_enabled = optional(bool, false)<br/>  }))</pre> | `[]` | no |
