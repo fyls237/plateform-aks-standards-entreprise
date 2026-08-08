@@ -111,6 +111,14 @@ module "identities" {
     "id-aks-${local.name_prefix}" = {}
   }
 
+  role_assignments = [
+    {
+      scope                = module.networking.subnet_ids["snet-aks"]
+      role_definition_name = "Network Contributor"
+      identity_key         = "id-aks-${local.name_prefix}"
+    }
+  ]
+
   tags = local.tags
 }
 
@@ -136,6 +144,7 @@ module "aks" {
     max_count            = 3
     auto_scaling_enabled = true
     os_sku               = "AzureLinux"
+    zones                = ["1"]
   }
 
   log_analytics_workspace_id = module.log_analytics.workspace_id
@@ -156,9 +165,13 @@ module "acr" {
   location            = azurerm_resource_group.this.location
   sku                 = "Basic"
 
-  aks_principal_id = module.aks.kubelet_identity.object_id
-
   tags = local.tags
+}
+
+resource "azurerm_role_assignment" "aks_acr_pull" {
+  scope                = module.acr.acr_id
+  role_definition_name = "AcrPull"
+  principal_id         = module.aks.kubelet_identity.object_id
 }
 
 # ---------------------------------------------------------------------------
