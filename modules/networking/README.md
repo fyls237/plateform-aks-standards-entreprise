@@ -21,6 +21,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [azurerm_monitor_diagnostic_setting.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
+| [azurerm_monitor_diagnostic_setting.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) | resource |
 | [azurerm_route_table.route_table](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) | resource |
 | [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) | resource |
@@ -32,8 +33,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_ddos_protection_plan_id"></a> [ddos\_protection\_plan\_id](#input\_ddos\_protection\_plan\_id) | ID of the DDoS protection plan to attach to the Virtual Network. | `string` | `null` | no |
 | <a name="input_dns_servers"></a> [dns\_servers](#input\_dns\_servers) | Custom DNS servers for the Virtual Network. Leave empty to use Azure-provided DNS. | `list(string)` | `[]` | no |
 | <a name="input_enable_diagnostics"></a> [enable\_diagnostics](#input\_enable\_diagnostics) | Enable diagnostic settings for NSG flow logs. | `bool` | `false` | no |
+| <a name="input_enable_vnet_diagnostics"></a> [enable\_vnet\_diagnostics](#input\_enable\_vnet\_diagnostics) | Enable diagnostic settings for the Virtual Network. Requires log\_analytics\_workspace\_id to be set. | `bool` | `false` | no |
 | <a name="input_location"></a> [location](#input\_location) | Azure region for all networking resources. | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id) | Log Analytics Workspace ID for diagnostic settings. Required when enable\_diagnostics is true. | `string` | `null` | no |
 | <a name="input_network_security_groups"></a> [network\_security\_groups](#input\_network\_security\_groups) | Map of Network Security Groups to create and associate with subnets.<br/>Key = NSG name, value = object with subnet\_key and security rules. | <pre>map(object({<br/>    subnet_key = string<br/>    rules = optional(list(object({<br/>      name                       = string<br/>      priority                   = number<br/>      direction                  = string<br/>      access                     = string<br/>      protocol                   = string<br/>      source_port_range          = optional(string, "*")<br/>      destination_port_range     = optional(string)<br/>      destination_port_ranges    = optional(list(string))<br/>      source_address_prefix      = optional(string)<br/>      source_address_prefixes    = optional(list(string))<br/>      destination_address_prefix = optional(string, "*")<br/>    })), [])<br/>  }))</pre> | `{}` | no |

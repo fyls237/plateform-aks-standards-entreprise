@@ -37,6 +37,8 @@ Use **User-Assigned Managed Identity** for the AKS cluster.
 ### Rationale
 - Identity lifecycle is decoupled from the cluster — survives cluster re-creation
 - RBAC role assignments can be pre-provisioned before cluster creation
+- Strict separation of concerns: A dedicated identity for the Control Plane (Network Contributor) and a separate one for the Kubelet (AcrPull)
+- The Control Plane identity is explicitly granted `Managed Identity Operator` over the Kubelet identity to attach it to VMSS nodes
 - Enables consistent identity management across environments
 - Aligns with enterprise identity governance patterns
 
@@ -84,7 +86,7 @@ Default to **Premium SKU** for all environments.
 ### Rationale
 - Required for private endpoints (production requirement)
 - Supports geo-replication for multi-region scenarios
-- Content trust (image signing) only available on Premium
+- ~~Content trust (image signing)~~ — DCT deprecated by Microsoft (retirement March 2028), use [Notary Project](https://notaryproject.dev/) instead
 - Retention policies for untagged manifests
 - Network rule sets for IP-based restrictions
 

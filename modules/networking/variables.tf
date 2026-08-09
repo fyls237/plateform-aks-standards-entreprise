@@ -113,8 +113,20 @@ variable "dns_servers" {
   default     = []
 }
 
+variable "ddos_protection_plan_id" {
+  description = "ID of the DDoS protection plan to attach to the Virtual Network."
+  type        = string
+  default     = null
+}
+
 variable "enable_diagnostics" {
   description = "Enable diagnostic settings for NSG flow logs."
+  type        = bool
+  default     = false
+}
+
+variable "enable_vnet_diagnostics" {
+  description = "Enable diagnostic settings for the Virtual Network. Requires log_analytics_workspace_id to be set."
   type        = bool
   default     = false
 }

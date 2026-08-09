@@ -10,10 +10,11 @@ resource "azurerm_key_vault" "key_vault" {
   tenant_id           = var.tenant_id
   sku_name            = var.sku_name
 
-  enabled_for_disk_encryption = var.enabled_for_disk_encryption
-  purge_protection_enabled    = var.purge_protection_enabled
-  soft_delete_retention_days  = var.soft_delete_retention_days
-  enable_rbac_authorization   = var.enable_rbac_authorization
+  enabled_for_disk_encryption   = var.enabled_for_disk_encryption
+  purge_protection_enabled      = var.purge_protection_enabled
+  soft_delete_retention_days    = var.soft_delete_retention_days
+  rbac_authorization_enabled    = var.enable_rbac_authorization
+  public_network_access_enabled = var.public_network_access_enabled
 
   network_acls {
     bypass                     = var.network_acls.bypass

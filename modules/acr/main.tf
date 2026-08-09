@@ -11,6 +11,7 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled                 = var.admin_enabled
   public_network_access_enabled = var.public_network_access_enabled
   zone_redundancy_enabled       = var.zone_redundancy_enabled
+  anonymous_pull_enabled        = false
 
   retention_policy_in_days = var.sku == "Premium" ? var.retention_policy_days : null
 

@@ -38,7 +38,7 @@ No modules.
 | <a name="input_network_rule_set"></a> [network\_rule\_set](#input\_network\_rule\_set) | Network rule set for the registry. Requires Premium SKU. | <pre>object({<br/>    default_action = optional(string, "Allow")<br/>    ip_rules = optional(list(object({<br/>      action   = string<br/>      ip_range = string<br/>    })), [])<br/>  })</pre> | `null` | no |
 | <a name="input_private_dns_zone_id"></a> [private\_dns\_zone\_id](#input\_private\_dns\_zone\_id) | Private DNS Zone ID for ACR private endpoint. | `string` | `null` | no |
 | <a name="input_private_endpoint_subnet_id"></a> [private\_endpoint\_subnet\_id](#input\_private\_endpoint\_subnet\_id) | Subnet ID for the private endpoint. Required when enable\_private\_endpoint is true. | `string` | `null` | no |
-| <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Allow public network access to the registry. | `bool` | `true` | no |
+| <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Allow public network access to the registry. | `bool` | `false` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group. | `string` | n/a | yes |
 | <a name="input_retention_policy_days"></a> [retention\_policy\_days](#input\_retention\_policy\_days) | Number of days to retain untagged manifests. Set to 0 to disable. Requires Premium SKU. | `number` | `30` | no |
 | <a name="input_sku"></a> [sku](#input\_sku) | SKU for the Container Registry. Use Premium for private endpoints and geo-replication. | `string` | `"Premium"` | no |

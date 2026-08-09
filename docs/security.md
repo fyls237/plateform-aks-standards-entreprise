@@ -73,6 +73,14 @@ The local Kubernetes admin account (`clusterAdmin`) is **disabled** by default:
 | Azure Kubernetes Service RBAC Writer | Namespace | Deploy workloads |
 | Azure Kubernetes Service RBAC Reader | Cluster | Read-only access |
 
+## Supply Chain Security (ACR)
+
+The Azure Container Registry is locked down to prevent image tampering and data exfiltration:
+
+- **Public Network Access Disabled**: The public endpoint is completely disabled by default (requires VNet injection for CI/CD runners).
+- **Anonymous Pull Disabled**: No anonymous access is permitted under any circumstances.
+- **Content Trust (Image Signing)**: Docker Content Trust (DCT) is deprecated by Microsoft (retirement March 2028) and has been removed from the AzureRM provider v4.x. For container image signing and verification, use the [Notary Project](https://notaryproject.dev/) (Notation) instead.
+
 ## Secrets Management
 
 ### Key Vault Integration
@@ -80,6 +88,7 @@ The local Kubernetes admin account (`clusterAdmin`) is **disabled** by default:
 - **RBAC authorization** (not access policies) for granular, auditable access
 - **Soft delete + purge protection** prevent accidental or malicious deletion
 - **Private endpoint** in production — no public access
+- **Public Network Access Disabled** — even with firewalls, the public endpoint is completely disabled at the Azure Resource level when using Private Endpoints.
 - **Diagnostic logging** of all audit events to Log Analytics
 
 ### Secret Access Pattern
@@ -103,12 +112,10 @@ Applications access Key Vault secrets via:
 | Data | Key Vault for secrets | all |
 | Monitoring | Audit logs + alerts | all |
 
-### Private Cluster
+### API Server Security
 
-In production:
-- The AKS API server has **no public IP**
-- Access is via private endpoint within the VNet
-- Use `az aks command invoke` or a jumpbox for management
+- **Private Cluster (Production)**: The AKS API server has **no public IP**. Access is via private endpoint within the VNet. Use `az aks command invoke` or a jumpbox for management.
+- **Public Cluster (Development)**: If deployed as a public cluster, access is strictly limited using **Authorized IP Ranges** to explicitly allowlist corporate or CI/CD IPs, rejecting `0.0.0.0/0`.
 
 ## Least Privilege
 
@@ -129,4 +136,9 @@ The security architecture supports compliance with:
 - **PCI DSS**: Network segmentation, encryption, access control
 - **GDPR**: Data residency (single-region), audit trails
 
-> **Note**: Additional controls (Azure Policy, Defender for Cloud) are on the roadmap.
+### In-Cluster Governance (Azure Policy)
+
+The **Azure Policy Add-on for Kubernetes** is enabled by default. This translates Azure Policies into Gatekeeper v3 (OPA) constraints, allowing centralized enforcement of rules such as:
+- Blocking privileged containers
+- Enforcing resource quotas
+- Restricting allowed container registries

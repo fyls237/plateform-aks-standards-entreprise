@@ -18,10 +18,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
   image_cleaner_enabled        = var.image_cleaner_enabled
   image_cleaner_interval_hours = var.image_cleaner_interval_hours
 
-  # Private Cluster
+  # Private Cluster & API Access
   private_cluster_enabled             = var.private_cluster_enabled
   private_dns_zone_id                 = var.private_cluster_enabled ? var.private_dns_zone_id : null
   private_cluster_public_fqdn_enabled = var.private_cluster_enabled ? var.private_cluster_public_fqdn_enabled : null
+
+  dynamic "api_server_access_profile" {
+    for_each = !var.private_cluster_enabled && length(var.api_server_authorized_ip_ranges) > 0 ? [1] : []
+    content {
+      authorized_ip_ranges = var.api_server_authorized_ip_ranges
+    }
+  }
 
   # RBAC & Auth
   azure_active_directory_role_based_access_control {
@@ -32,6 +39,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   local_account_disabled    = var.local_account_disabled
   oidc_issuer_enabled       = var.oidc_issuer_enabled
   workload_identity_enabled = var.workload_identity_enabled
+  azure_policy_enabled      = var.azure_policy_enabled
+
+  dynamic "key_vault_secrets_provider" {
+    for_each = var.key_vault_secrets_provider_enabled ? [1] : []
+    content {
+      secret_rotation_enabled = true
+    }
+  }
 
   # Identity
   identity {

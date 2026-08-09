@@ -137,6 +137,12 @@ variable "private_cluster_public_fqdn_enabled" {
   default     = false
 }
 
+variable "api_server_authorized_ip_ranges" {
+  description = "List of authorized IP ranges to access the API server. Applies only when private_cluster_enabled is false."
+  type        = list(string)
+  default     = []
+}
+
 # ---- Identity ----
 
 variable "identity_type" {
@@ -196,6 +202,20 @@ variable "admin_group_object_ids" {
   description = "List of Azure AD group object IDs for cluster admin access."
   type        = list(string)
   default     = []
+}
+
+# ---- Add-ons & Governance ----
+
+variable "azure_policy_enabled" {
+  description = "Enable Azure Policy for Kubernetes."
+  type        = bool
+  default     = true
+}
+
+variable "key_vault_secrets_provider_enabled" {
+  description = "Enable Azure Key Vault Secrets Provider (CSI driver)."
+  type        = bool
+  default     = false
 }
 
 # ---- Default (System) Node Pool ----

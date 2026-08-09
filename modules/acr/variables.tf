@@ -42,7 +42,7 @@ variable "admin_enabled" {
 variable "public_network_access_enabled" {
   description = "Allow public network access to the registry."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "zone_redundancy_enabled" {

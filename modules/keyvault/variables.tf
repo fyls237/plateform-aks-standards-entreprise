@@ -67,6 +67,12 @@ variable "enable_rbac_authorization" {
   default     = true
 }
 
+variable "public_network_access_enabled" {
+  description = "Whether public network access is allowed for this Key Vault."
+  type        = bool
+  default     = false
+}
+
 variable "network_acls" {
   description = "Network ACL configuration for the Key Vault."
   type = object({
