@@ -98,8 +98,8 @@ graph TB
 
 ### Data Flow
 
-1. **Identity** → AKS: User-assigned managed identity is attached to the AKS cluster at creation
-2. **Kubelet Identity** → ACR: The kubelet identity is granted `AcrPull` to pull container images
+1. **Control Plane Identity** → AKS & VNet: User-assigned managed identity is attached to the AKS cluster at creation. It holds `Network Contributor` on the subnet to manage Load Balancers and `Managed Identity Operator` on the Kubelet identity.
+2. **Kubelet Identity** → ACR: A separate, dedicated kubelet identity is granted `AcrPull` to pull container images.
 3. **AKS** → VNet: Nodes are deployed into a dedicated subnet with NSG and route table
 4. **AKS** → Log Analytics: Container Insights agent forwards logs and metrics
 5. **Private Endpoints** → DNS: Private DNS zones resolve service FQDNs to private IPs

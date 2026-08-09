@@ -99,3 +99,9 @@ The VNet design is compatible with Azure hub-and-spoke topologies:
 - **Route tables** support UDR to a hub firewall
 - **DNS forwarding** can be configured via the networking module's `dns_servers` variable
 - **VNet peering** can be added by extending the networking module
+
+## DDoS Protection & Diagnostics
+
+For internet-facing, production workloads (e.g., exposing an Application Gateway), the networking module supports:
+- **DDoS Protection Plan**: A native Azure DDoS plan can be attached to the Virtual Network to mitigate volumetric attacks.
+- **VNet Diagnostics**: Native Virtual Network metrics and `VMProtectionAlerts` are exported to Log Analytics for centralized observability.

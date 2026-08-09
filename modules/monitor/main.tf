@@ -45,6 +45,32 @@ locals {
         threshold        = 5
       }
     }
+    "node-not-ready" = {
+      description = "Alert when nodes are in NotReady state"
+      severity    = 1
+      frequency   = "PT5M"
+      window_size = "PT15M"
+      criteria = {
+        metric_namespace = "Insights.Container/nodes"
+        metric_name      = "nodesCount"
+        aggregation      = "Average"
+        operator         = "GreaterThan"
+        threshold        = 0
+      }
+    }
+    "pod-failed" = {
+      description = "Alert when pods are in Failed state"
+      severity    = 2
+      frequency   = "PT5M"
+      window_size = "PT15M"
+      criteria = {
+        metric_namespace = "Insights.Container/pods"
+        metric_name      = "podCount"
+        aggregation      = "Average"
+        operator         = "GreaterThan"
+        threshold        = 0
+      }
+    }
   } : {}
 
   effective_alert_rules = length(var.alert_rules) > 0 ? var.alert_rules : local.default_alert_rules
@@ -55,7 +81,7 @@ locals {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_monitor_diagnostic_setting" "aks" {
-  count = var.enable_diagnostic_settings && var.aks_cluster_id != null ? 1 : 0
+  count = var.enable_diagnostic_settings ? 1 : 0
 
   name                       = "aks-diagnostics"
   target_resource_id         = var.aks_cluster_id
@@ -75,6 +101,26 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
 
   enabled_log {
     category = "kube-audit-admin"
+  }
+
+  enabled_log {
+    category = "kube-audit-admin"
+  }
+
+  enabled_log {
+    category = "cluster-autoscaler"
+  }
+
+  enabled_log {
+    category = "csi-azuredisk-controller"
+  }
+
+  enabled_log {
+    category = "csi-azurefile-controller"
+  }
+
+  enabled_log {
+    category = "csi-snapshot-controller"
   }
 
   enabled_log {
@@ -114,7 +160,7 @@ resource "azurerm_monitor_action_group" "action_group" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_monitor_metric_alert" "metric_alert" {
-  for_each = var.enable_alerts && var.aks_cluster_id != null ? local.effective_alert_rules : {}
+  for_each = var.enable_alerts ? local.effective_alert_rules : {}
 
   name                = each.key
   resource_group_name = var.resource_group_name

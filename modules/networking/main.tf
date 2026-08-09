@@ -10,6 +10,15 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = var.vnet_address_space
   dns_servers         = length(var.dns_servers) > 0 ? var.dns_servers : null
 
+  dynamic "ddos_protection_plan" {
+    for_each = var.ddos_protection_plan_id != null ? [1] : []
+
+    content {
+      id     = var.ddos_protection_plan_id
+      enable = true
+    }
+  }
+
   tags = var.tags
 }
 
@@ -131,5 +140,32 @@ resource "azurerm_monitor_diagnostic_setting" "nsg" {
 
   enabled_log {
     category = "NetworkSecurityGroupRuleCounter"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Diagnostic Settings — Virtual Network
+# ---------------------------------------------------------------------------
+
+resource "azurerm_monitor_diagnostic_setting" "vnet" {
+  count = var.enable_vnet_diagnostics ? 1 : 0
+
+  name                       = "${var.vnet_name}-diag"
+  target_resource_id         = azurerm_virtual_network.vnet.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  enabled_log {
+    category = "VMProtectionAlerts"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.log_analytics_workspace_id != null
+      error_message = "log_analytics_workspace_id must be provided when enable_vnet_diagnostics is true."
+    }
   }
 }
