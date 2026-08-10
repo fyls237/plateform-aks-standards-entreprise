@@ -171,11 +171,12 @@ resource "azurerm_monitor_metric_alert" "metric_alert" {
   window_size         = each.value.window_size
 
   criteria {
-    metric_namespace = each.value.criteria.metric_namespace
-    metric_name      = each.value.criteria.metric_name
-    aggregation      = each.value.criteria.aggregation
-    operator         = each.value.criteria.operator
-    threshold        = each.value.criteria.threshold
+    metric_namespace       = each.value.criteria.metric_namespace
+    metric_name            = each.value.criteria.metric_name
+    aggregation            = each.value.criteria.aggregation
+    operator               = each.value.criteria.operator
+    threshold              = each.value.criteria.threshold
+    skip_metric_validation = true
   }
 
   action {
