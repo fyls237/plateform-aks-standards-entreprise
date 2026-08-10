@@ -282,8 +282,8 @@ module "aks" {
 
   default_node_pool = {
     vm_size              = "Standard_D4s_v5"
-    min_count            = 2
-    max_count            = 5
+    min_count            = 1
+    max_count            = 2
     auto_scaling_enabled = true
     os_sku               = "AzureLinux"
     zones                = ["1"]
@@ -292,8 +292,8 @@ module "aks" {
   node_pools = {
     "workload" = {
       vm_size              = "Standard_D4s_v5"
-      min_count            = 2
-      max_count            = 10
+      min_count            = 1
+      max_count            = 2
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
       zones                = ["1"]
