@@ -1,11 +1,6 @@
 # ---------------------------------------------------------------------------
-# Dev Environment — Variables
+# Prod Environment — Variables
 # ---------------------------------------------------------------------------
-
-variable "subscription_id" {
-  description = "Azure Subscription ID."
-  type        = string
-}
 
 variable "location" {
   description = "Azure region for all resources."
@@ -16,7 +11,7 @@ variable "location" {
 variable "environment" {
   description = "Environment name."
   type        = string
-  default     = "dev"
+  default     = "prod"
 }
 
 variable "project" {

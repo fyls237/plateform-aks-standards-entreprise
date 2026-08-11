@@ -307,6 +307,7 @@ module "aks" {
       max_count            = 3
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
+      zones                = ["1"]
       node_labels          = { "workload-type" = "general" }
     }
     "memory" = {
@@ -315,6 +316,7 @@ module "aks" {
       max_count            = 3
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
+      zones                = ["1"]
       node_labels          = { "workload-type" = "memory-intensive" }
       node_taints          = ["workload-type=memory-intensive:NoSchedule"]
     }
