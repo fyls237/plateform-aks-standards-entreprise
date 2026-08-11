@@ -83,13 +83,15 @@ In production environments, all PaaS services are accessed via private endpoints
 |---------|-----------------|--------|
 | ACR | privatelink.azurecr.io | snet-private-endpoints |
 | Key Vault | privatelink.vaultcore.azure.net | snet-private-endpoints |
+| AKS API Server | privatelink.<region>.azmk8s.io | snet-aks-nodes |
 
 ### DNS Resolution
 
 Private DNS zones are linked to the VNet, ensuring that:
 1. `myacr.azurecr.io` resolves to a private IP within the VNet
-2. No traffic leaves the Azure backbone
-3. NSG rules on the PE subnet control access
+2. The AKS API server (`*.privatelink.<region>.azmk8s.io`) resolves natively for nodes and VNet clients
+3. No traffic leaves the Azure backbone
+4. NSG rules on the subnets control access
 
 ## Hub-and-Spoke Readiness
 

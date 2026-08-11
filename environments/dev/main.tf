@@ -90,6 +90,24 @@ module "identities" {
     "id-kubelet-${local.name_prefix}" = {}
   }
 
+  role_assignments = [
+    {
+      scope                = module.networking.subnet_ids["snet-aks-nodes"]
+      role_definition_name = "Network Contributor"
+      identity_key         = "id-aks-${local.name_prefix}"
+    },
+    {
+      scope                = module.identities.identity_ids["id-kubelet-${local.name_prefix}"]
+      role_definition_name = "Managed Identity Operator"
+      identity_key         = "id-aks-${local.name_prefix}"
+    },
+    {
+      scope                = module.acr.acr_id
+      role_definition_name = "AcrPull"
+      identity_key         = "id-kubelet-${local.name_prefix}"
+    }
+  ]
+
   tags = local.default_tags
 }
 
@@ -157,6 +175,12 @@ module "aks" {
   identity_type             = "UserAssigned"
   user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
 
+  kubelet_identity = {
+    client_id                 = module.identities.identity_client_ids["id-kubelet-${local.name_prefix}"]
+    object_id                 = module.identities.identity_principal_ids["id-kubelet-${local.name_prefix}"]
+    user_assigned_identity_id = module.identities.identity_ids["id-kubelet-${local.name_prefix}"]
+  }
+
   # RBAC
   admin_group_object_ids = var.admin_group_object_ids
 
@@ -165,18 +189,18 @@ module "aks" {
     name                         = "system"
     vm_size                      = "Standard_D2s_v5"
     min_count                    = 1
-    max_count                    = 3
+    max_count                    = 2
     auto_scaling_enabled         = true
     os_sku                       = "AzureLinux"
     only_critical_addons_enabled = true
-    zones                        = ["1", "2", "3"]
+    zones                        = ["1"]
   }
 
   node_pools = {
     "workload" = {
       vm_size              = "Standard_D2s_v5"
       min_count            = 1
-      max_count            = 5
+      max_count            = 2
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
       node_labels = {
@@ -194,15 +218,6 @@ module "aks" {
   tags = local.default_tags
 }
 
-# ---------------------------------------------------------------------------
-# ACR Pull — grant AKS kubelet identity pull access
-# ---------------------------------------------------------------------------
-
-resource "azurerm_role_assignment" "aks_acr_pull" {
-  scope                = module.acr.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = module.aks.kubelet_identity.object_id
-}
 
 # ---------------------------------------------------------------------------
 # Monitoring

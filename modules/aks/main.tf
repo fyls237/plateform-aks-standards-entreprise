@@ -7,8 +7,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   name                       = var.cluster_name
   location                   = var.location
   resource_group_name        = var.resource_group_name
-  dns_prefix                 = var.private_cluster_enabled ? null : var.cluster_name
-  dns_prefix_private_cluster = var.private_cluster_enabled ? var.cluster_name : null
+  dns_prefix                 = (!var.private_cluster_enabled || var.private_dns_zone_id == "System" || var.private_dns_zone_id == "None") ? var.cluster_name : null
+  dns_prefix_private_cluster = (var.private_cluster_enabled && var.private_dns_zone_id != "System" && var.private_dns_zone_id != "None") ? var.cluster_name : null
   kubernetes_version         = var.kubernetes_version
 
   # SKU & Upgrades
