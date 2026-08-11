@@ -231,6 +231,7 @@ module "aks" {
       max_count            = 4
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
+      zones                = ["1"]
       node_labels          = { "workload-type" = "general" }
     }
   }

@@ -163,7 +163,7 @@ module "aks" {
     auto_scaling_enabled         = true
     os_sku                       = "AzureLinux"
     only_critical_addons_enabled = true
-    zones                        = ["1", "2", "3"]
+    zones                        = ["1"]
   }
 
   node_pools = {
@@ -173,6 +173,7 @@ module "aks" {
       max_count            = 3
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
+      zones                = ["1"]
       node_labels          = { "workload-type" = "general" }
     }
   }
