@@ -53,6 +53,7 @@ graph TB
             subgraph "DNS"
                 DNS_ACR["Private DNS: ACR"]
                 DNS_KV["Private DNS: Key Vault"]
+                DNS_AKS["Private DNS: AKS"]
             end
         end
     end
@@ -84,8 +85,10 @@ graph TB
 
     DNS_ACR --> VNET
     DNS_KV --> VNET
+    DNS_AKS --> VNET
     ACR_PE -.-> DNS_ACR
     KV_PE -.-> DNS_KV
+    AKS -.-> DNS_AKS
 
     style AKS fill:#326CE5,stroke:#fff,color:#fff
     style ACR fill:#0078D4,stroke:#fff,color:#fff
@@ -102,7 +105,7 @@ graph TB
 2. **Kubelet Identity** → ACR: A separate, dedicated kubelet identity is granted `AcrPull` to pull container images.
 3. **AKS** → VNet: Nodes are deployed into a dedicated subnet with NSG and route table
 4. **AKS** → Log Analytics: Container Insights agent forwards logs and metrics
-5. **Private Endpoints** → DNS: Private DNS zones resolve service FQDNs to private IPs
+5. **Private DNS** → VNet: Private DNS zones resolve service FQDNs to private IPs (AKS API Server, ACR, Key Vault)
 6. **Monitor** → AKS: Diagnostic settings capture control plane logs; metric alerts fire on threshold
 
 ### Module Dependencies
@@ -120,6 +123,7 @@ graph LR
     ID["identities"] --> AKS
     DNS["private-dns"] --> ACR
     DNS --> KV
+    DNS --> AKS
     NET --> DNS
     AKS --> MON
 

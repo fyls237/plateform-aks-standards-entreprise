@@ -137,6 +137,12 @@ module "private_dns" {
         virtual_network_id = module.networking.vnet_id
       }]
     }
+    "privatelink.${local.location}.azmk8s.io" = {
+      vnet_links = [{
+        name               = "aks-link"
+        virtual_network_id = module.networking.vnet_id
+      }]
+    }
   }
 
   tags = local.default_tags
@@ -171,6 +177,29 @@ module "identities" {
     "id-aks-${local.name_prefix}"     = {}
     "id-kubelet-${local.name_prefix}" = {}
   }
+
+  role_assignments = [
+    {
+      scope                = module.networking.subnet_ids["snet-aks-nodes"]
+      role_definition_name = "Network Contributor"
+      identity_key         = "id-aks-${local.name_prefix}"
+    },
+    {
+      scope                = module.identities.identity_ids["id-kubelet-${local.name_prefix}"]
+      role_definition_name = "Managed Identity Operator"
+      identity_key         = "id-aks-${local.name_prefix}"
+    },
+    {
+      scope                = module.acr.acr_id
+      role_definition_name = "AcrPull"
+      identity_key         = "id-kubelet-${local.name_prefix}"
+    },
+    {
+      scope                = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
+      role_definition_name = "Private DNS Zone Contributor"
+      identity_key         = "id-aks-${local.name_prefix}"
+    }
+  ]
 
   tags = local.default_tags
 }
@@ -242,16 +271,21 @@ module "aks" {
   location            = azurerm_resource_group.this.location
 
   # Networking
-  vnet_subnet_id = module.networking.subnet_ids["snet-aks-nodes"]
-
-  # Private Cluster — fully private in production
+  vnet_subnet_id                      = module.networking.subnet_ids["snet-aks-nodes"]
   private_cluster_enabled             = true
+  private_dns_zone_id                 = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
   private_cluster_public_fqdn_enabled = false
 
   # Identity
   identity_type             = "UserAssigned"
   user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
   admin_group_object_ids    = var.admin_group_object_ids
+
+  kubelet_identity = {
+    client_id                 = module.identities.identity_client_ids["id-kubelet-${local.name_prefix}"]
+    object_id                 = module.identities.identity_principal_ids["id-kubelet-${local.name_prefix}"]
+    user_assigned_identity_id = module.identities.identity_ids["id-kubelet-${local.name_prefix}"]
+  }
 
   # Production-grade node pools
   default_node_pool = {
@@ -263,14 +297,14 @@ module "aks" {
     os_disk_size_gb              = 128
     os_sku                       = "AzureLinux"
     only_critical_addons_enabled = true
-    zones                        = ["1", "2", "3"]
+    zones                        = ["1"]
   }
 
   node_pools = {
     "workload" = {
       vm_size              = "Standard_D4s_v5"
-      min_count            = 3
-      max_count            = 20
+      min_count            = 1
+      max_count            = 3
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
       node_labels          = { "workload-type" = "general" }
@@ -278,7 +312,7 @@ module "aks" {
     "memory" = {
       vm_size              = "Standard_E4s_v5"
       min_count            = 0
-      max_count            = 10
+      max_count            = 3
       auto_scaling_enabled = true
       os_sku               = "AzureLinux"
       node_labels          = { "workload-type" = "memory-intensive" }
@@ -307,11 +341,7 @@ module "aks" {
 # ACR Pull
 # ---------------------------------------------------------------------------
 
-resource "azurerm_role_assignment" "aks_acr_pull" {
-  scope                = module.acr.acr_id
-  role_definition_name = "AcrPull"
-  principal_id         = module.aks.kubelet_identity.object_id
-}
+
 
 # ---------------------------------------------------------------------------
 # Monitoring & Alerts

@@ -283,10 +283,10 @@ Private DNS zones with VNet links for PaaS service resolution.
 
 | Environment | Private Cluster | Node VM | System Pool | Workload Pool | SKU Tier | Alerts | Locks |
 |-------------|:-:|---------|:-:|:-:|----------|:-:|:-:|
-| **dev** | ❌ | D2s_v5 | 1-3 | 1-5 | Free | ❌ | ❌ |
-| **test** | ❌ | D2s-D4s_v5 | 2-4 | 2-8 | Standard | ✅ | ❌ |
-| **preprod** | ✅ | D4s_v5 | 2-5 | 3-15 | Standard | ✅ | ❌ |
-| **prod** | ✅ | D4s_v5 | 3-6 | 3-20 + memory pool | Standard | ✅ | ✅ |
+| **dev** | ❌ | D2s_v5 | 1-2 | 1-2 | Free | ❌ | ❌ |
+| **test** | ❌ | D2s-D4s_v5 | 1-2 | 1-3 | Standard | ✅ | ❌ |
+| **preprod** | ✅ | D4s_v5 | 1-3 | 2-4 | Standard | ✅ | ❌ |
+| **prod** | ✅ | D4s_v5 | 1-3 | 1-3 + memory pool | Standard | ✅ | ✅ |
 
 ---
 
