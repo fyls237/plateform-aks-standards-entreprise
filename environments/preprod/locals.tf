@@ -20,7 +20,7 @@ locals {
   vnet_name           = "vnet-${local.name_prefix}"
   aks_cluster_name    = "aks-${local.name_prefix}"
   acr_name            = replace("acr${local.project}${local.environment}${local.loc}", "-", "")
-  keyvault_name       = "kv-${local.name_prefix}"
+  keyvault_name       = "kv-${local.project}-pprd-${local.loc}"
   log_analytics_name  = "log-${local.name_prefix}"
 
   default_tags = merge({
