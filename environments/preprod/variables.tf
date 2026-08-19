@@ -40,3 +40,37 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# ---------------------------------------------------------------------------
+# Hub & Spoke Integration (optional)
+# ---------------------------------------------------------------------------
+
+variable "hub_vnet_id" {
+  description = "Resource ID of the Hub VNet for peering. Leave null for standalone deployments."
+  type        = string
+  default     = null
+}
+
+variable "hub_vnet_name" {
+  description = "Name of the Hub VNet."
+  type        = string
+  default     = null
+}
+
+variable "hub_vnet_resource_group_name" {
+  description = "Resource group of the Hub VNet."
+  type        = string
+  default     = null
+}
+
+variable "hub_subscription_id" {
+  description = "Subscription ID of the Hub VNet. Leave null if same subscription."
+  type        = string
+  default     = null
+}
+
+variable "hub_firewall_private_ip" {
+  description = "Private IP address of the Hub's Azure Firewall."
+  type        = string
+  default     = null
+}

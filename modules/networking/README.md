@@ -23,11 +23,15 @@ No modules.
 | [azurerm_monitor_diagnostic_setting.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_monitor_diagnostic_setting.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) | resource |
+| [azurerm_route_table.hub_egress](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) | resource |
 | [azurerm_route_table.route_table](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table) | resource |
 | [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) | resource |
 | [azurerm_subnet_network_security_group_association.subnet_network_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_network_security_group_association) | resource |
+| [azurerm_subnet_route_table_association.hub_egress](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association) | resource |
 | [azurerm_subnet_route_table_association.subnet_route_table_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association) | resource |
 | [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
+| [azurerm_virtual_network_peering.hub_to_spoke](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
+| [azurerm_virtual_network_peering.spoke_to_hub](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering) | resource |
 
 ## Inputs
 
@@ -37,6 +41,15 @@ No modules.
 | <a name="input_dns_servers"></a> [dns\_servers](#input\_dns\_servers) | Custom DNS servers for the Virtual Network. Leave empty to use Azure-provided DNS. | `list(string)` | `[]` | no |
 | <a name="input_enable_diagnostics"></a> [enable\_diagnostics](#input\_enable\_diagnostics) | Enable diagnostic settings for NSG flow logs. | `bool` | `false` | no |
 | <a name="input_enable_vnet_diagnostics"></a> [enable\_vnet\_diagnostics](#input\_enable\_vnet\_diagnostics) | Enable diagnostic settings for the Virtual Network. Requires log\_analytics\_workspace\_id to be set. | `bool` | `false` | no |
+| <a name="input_hub_additional_routes"></a> [hub\_additional\_routes](#input\_hub\_additional\_routes) | Additional routes to add to the Hub egress route table alongside the default 0.0.0.0/0 route. | <pre>list(object({<br/>    name                   = string<br/>    address_prefix         = string<br/>    next_hop_type          = string<br/>    next_hop_in_ip_address = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_hub_allow_gateway_transit"></a> [hub\_allow\_gateway\_transit](#input\_hub\_allow\_gateway\_transit) | If true, allows the Hub VNet to use this Spoke's gateway. Typically true on the Hub side for gateway transit. | `bool` | `false` | no |
+| <a name="input_hub_egress_subnet_keys"></a> [hub\_egress\_subnet\_keys](#input\_hub\_egress\_subnet\_keys) | List of subnet keys to associate with the Hub egress route table. Must not overlap with subnets already defined in var.route\_tables. | `list(string)` | <pre>[<br/>  "snet-aks-nodes"<br/>]</pre> | no |
+| <a name="input_hub_firewall_private_ip"></a> [hub\_firewall\_private\_ip](#input\_hub\_firewall\_private\_ip) | Private IP address of the Hub's Azure Firewall. Enables egress UDR when set. | `string` | `null` | no |
+| <a name="input_hub_subscription_id"></a> [hub\_subscription\_id](#input\_hub\_subscription\_id) | Subscription ID of the Hub VNet for cross-subscription peering. Leave null to use the current subscription. | `string` | `null` | no |
+| <a name="input_hub_use_remote_gateways"></a> [hub\_use\_remote\_gateways](#input\_hub\_use\_remote\_gateways) | If true, the Spoke will use the Hub's gateways (ExpressRoute/VPN). Requires a gateway deployed in the Hub VNet. | `bool` | `false` | no |
+| <a name="input_hub_vnet_id"></a> [hub\_vnet\_id](#input\_hub\_vnet\_id) | Resource ID of the Hub VNet. Enables VNet peering when set. | `string` | `null` | no |
+| <a name="input_hub_vnet_name"></a> [hub\_vnet\_name](#input\_hub\_vnet\_name) | Name of the Hub VNet. Required when hub\_vnet\_id is set. | `string` | `null` | no |
+| <a name="input_hub_vnet_resource_group_name"></a> [hub\_vnet\_resource\_group\_name](#input\_hub\_vnet\_resource\_group\_name) | Resource group name of the Hub VNet. Required when hub\_vnet\_id is set. | `string` | `null` | no |
 | <a name="input_location"></a> [location](#input\_location) | Azure region for all networking resources. | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id) | Log Analytics Workspace ID for diagnostic settings. Required when enable\_diagnostics is true. | `string` | `null` | no |
 | <a name="input_network_security_groups"></a> [network\_security\_groups](#input\_network\_security\_groups) | Map of Network Security Groups to create and associate with subnets.<br/>Key = NSG name, value = object with subnet\_key and security rules. | <pre>map(object({<br/>    subnet_key = string<br/>    rules = optional(list(object({<br/>      name                       = string<br/>      priority                   = number<br/>      direction                  = string<br/>      access                     = string<br/>      protocol                   = string<br/>      source_port_range          = optional(string, "*")<br/>      destination_port_range     = optional(string)<br/>      destination_port_ranges    = optional(list(string))<br/>      source_address_prefix      = optional(string)<br/>      source_address_prefixes    = optional(list(string))<br/>      destination_address_prefix = optional(string, "*")<br/>    })), [])<br/>  }))</pre> | `{}` | no |
@@ -51,7 +64,10 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_hub_egress_route_table_id"></a> [hub\_egress\_route\_table\_id](#output\_hub\_egress\_route\_table\_id) | Resource ID of the Hub egress route table. Null if Firewall integration is disabled. |
 | <a name="output_nsg_ids"></a> [nsg\_ids](#output\_nsg\_ids) | Map of NSG names to their resource IDs. |
+| <a name="output_peering_hub_to_spoke_id"></a> [peering\_hub\_to\_spoke\_id](#output\_peering\_hub\_to\_spoke\_id) | Resource ID of the Hub-to-Spoke VNet peering. Null if Hub integration is disabled. |
+| <a name="output_peering_spoke_to_hub_id"></a> [peering\_spoke\_to\_hub\_id](#output\_peering\_spoke\_to\_hub\_id) | Resource ID of the Spoke-to-Hub VNet peering. Null if Hub integration is disabled. |
 | <a name="output_route_table_ids"></a> [route\_table\_ids](#output\_route\_table\_ids) | Map of route table names to their resource IDs. |
 | <a name="output_subnet_address_prefixes"></a> [subnet\_address\_prefixes](#output\_subnet\_address\_prefixes) | Map of subnet names to their address prefixes. |
 | <a name="output_subnet_ids"></a> [subnet\_ids](#output\_subnet\_ids) | Map of subnet names to their resource IDs. |
