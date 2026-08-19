@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.6.0...v0.7.0) (2026-08-19)
+
+
+### Features
+
+* **network:** add hub and spoke connection on network module ([#37](https://github.com/fyls237/plateform-aks-standards-entreprise/issues/37)) ([a3e2a6b](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/a3e2a6b659bec174ba3c9066a449943287df2c0e))
+
 ## [0.6.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.5.0...v0.6.0) (2026-08-17)
 
 
