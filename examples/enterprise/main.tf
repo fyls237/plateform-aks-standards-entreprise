@@ -121,6 +121,16 @@ module "networking" {
   enable_diagnostics         = true
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
+
+  # --- Hub & Spoke integration (uncomment to enable) ---
+  # hub_vnet_id                  = "/subscriptions/xxx/resourceGroups/rg-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub"
+  # hub_vnet_name                = "vnet-hub"
+  # hub_vnet_resource_group_name = "rg-hub"
+  # hub_subscription_id          = "00000000-0000-0000-0000-000000000000"  # Only if Hub is in a different subscription
+  # hub_firewall_private_ip      = "10.0.0.4"
+  # hub_allow_gateway_transit     = true
+  # hub_use_remote_gateways       = false
+
   tags = local.tags
 }
 

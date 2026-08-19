@@ -169,3 +169,89 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
     }
   }
 }
+
+# ---------------------------------------------------------------------------
+# Hub & Spoke — VNet Peering
+# Conditional: only created when hub_vnet_id is provided
+# ---------------------------------------------------------------------------
+
+# Provider alias for cross-subscription peering (Hub side)
+# When hub_subscription_id is set, Hub-side resources use this provider.
+
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  count = var.hub_vnet_id != null ? 1 : 0
+
+  name                      = "peer-spoke-to-hub"
+  resource_group_name       = var.resource_group_name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = var.hub_vnet_id
+
+  allow_forwarded_traffic = true
+  allow_gateway_transit   = false
+  use_remote_gateways     = var.hub_use_remote_gateways
+
+  depends_on = [azurerm_subnet.subnet]
+}
+
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  count = var.hub_vnet_id != null ? 1 : 0
+
+  # Cross-subscription: if hub_subscription_id is set, the caller must
+  # ensure the azurerm provider has access to the Hub subscription
+  # (via a provider alias or service principal with cross-sub permissions).
+  provider = azurerm
+
+  name                      = "peer-hub-to-${var.vnet_name}"
+  resource_group_name       = var.hub_vnet_resource_group_name
+  virtual_network_name      = var.hub_vnet_name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+
+  allow_forwarded_traffic = true
+  allow_gateway_transit   = var.hub_allow_gateway_transit
+  use_remote_gateways     = false
+
+  depends_on = [azurerm_virtual_network_peering.spoke_to_hub]
+}
+
+# ---------------------------------------------------------------------------
+# Hub & Spoke — Egress Route Table (UDR to Azure Firewall)
+# Conditional: only created when hub_firewall_private_ip is provided
+# ---------------------------------------------------------------------------
+
+resource "azurerm_route_table" "hub_egress" {
+  count = var.hub_firewall_private_ip != null ? 1 : 0
+
+  name                          = "rt-hub-egress-${var.vnet_name}"
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  bgp_route_propagation_enabled = false
+
+  # Default route: all traffic to Azure Firewall
+  route {
+    name                   = "default-to-firewall"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = var.hub_firewall_private_ip
+  }
+
+  # Additional custom routes
+  dynamic "route" {
+    for_each = var.hub_additional_routes
+
+    content {
+      name                   = route.value.name
+      address_prefix         = route.value.address_prefix
+      next_hop_type          = route.value.next_hop_type
+      next_hop_in_ip_address = route.value.next_hop_in_ip_address
+    }
+  }
+
+  tags = var.tags
+}
+
+resource "azurerm_subnet_route_table_association" "hub_egress" {
+  for_each = var.hub_firewall_private_ip != null ? toset(var.hub_egress_subnet_keys) : toset([])
+
+  subnet_id      = azurerm_subnet.subnet[each.key].id
+  route_table_id = azurerm_route_table.hub_egress[0].id
+}

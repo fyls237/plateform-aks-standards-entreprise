@@ -112,6 +112,15 @@ module "networking" {
   enable_diagnostics         = true
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
+
+  # Hub & Spoke integration (optional)
+  hub_vnet_id                  = var.hub_vnet_id
+  hub_vnet_name                = var.hub_vnet_name
+  hub_vnet_resource_group_name = var.hub_vnet_resource_group_name
+  hub_subscription_id          = var.hub_subscription_id
+  hub_firewall_private_ip      = var.hub_firewall_private_ip
+  hub_allow_gateway_transit    = true
+
   tags = local.default_tags
 }
 

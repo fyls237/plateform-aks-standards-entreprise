@@ -36,3 +36,22 @@ output "route_table_ids" {
   description = "Map of route table names to their resource IDs."
   value       = { for k, v in azurerm_route_table.route_table : k => v.id }
 }
+
+# ---------------------------------------------------------------------------
+# Hub & Spoke Outputs
+# ---------------------------------------------------------------------------
+
+output "peering_spoke_to_hub_id" {
+  description = "Resource ID of the Spoke-to-Hub VNet peering. Null if Hub integration is disabled."
+  value       = var.hub_vnet_id != null ? azurerm_virtual_network_peering.spoke_to_hub[0].id : null
+}
+
+output "peering_hub_to_spoke_id" {
+  description = "Resource ID of the Hub-to-Spoke VNet peering. Null if Hub integration is disabled."
+  value       = var.hub_vnet_id != null ? azurerm_virtual_network_peering.hub_to_spoke[0].id : null
+}
+
+output "hub_egress_route_table_id" {
+  description = "Resource ID of the Hub egress route table. Null if Firewall integration is disabled."
+  value       = var.hub_firewall_private_ip != null ? azurerm_route_table.hub_egress[0].id : null
+}

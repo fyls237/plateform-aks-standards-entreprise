@@ -142,3 +142,71 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# ---------------------------------------------------------------------------
+# Hub & Spoke Integration (optional)
+# ---------------------------------------------------------------------------
+
+variable "hub_vnet_id" {
+  description = "Resource ID of the Hub VNet. Enables VNet peering when set."
+  type        = string
+  default     = null
+}
+
+variable "hub_vnet_name" {
+  description = "Name of the Hub VNet. Required when hub_vnet_id is set."
+  type        = string
+  default     = null
+}
+
+variable "hub_vnet_resource_group_name" {
+  description = "Resource group name of the Hub VNet. Required when hub_vnet_id is set."
+  type        = string
+  default     = null
+}
+
+variable "hub_subscription_id" {
+  description = "Subscription ID of the Hub VNet for cross-subscription peering. Leave null to use the current subscription."
+  type        = string
+  default     = null
+}
+
+variable "hub_use_remote_gateways" {
+  description = "If true, the Spoke will use the Hub's gateways (ExpressRoute/VPN). Requires a gateway deployed in the Hub VNet."
+  type        = bool
+  default     = false
+}
+
+variable "hub_allow_gateway_transit" {
+  description = "If true, allows the Hub VNet to use this Spoke's gateway. Typically true on the Hub side for gateway transit."
+  type        = bool
+  default     = false
+}
+
+variable "hub_firewall_private_ip" {
+  description = "Private IP address of the Hub's Azure Firewall. Enables egress UDR when set."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.hub_firewall_private_ip == null || can(regex("^(\\d{1,3}\\.){3}\\d{1,3}$", var.hub_firewall_private_ip))
+    error_message = "hub_firewall_private_ip must be a valid IPv4 address."
+  }
+}
+
+variable "hub_egress_subnet_keys" {
+  description = "List of subnet keys to associate with the Hub egress route table. Must not overlap with subnets already defined in var.route_tables."
+  type        = list(string)
+  default     = ["snet-aks-nodes"]
+}
+
+variable "hub_additional_routes" {
+  description = "Additional routes to add to the Hub egress route table alongside the default 0.0.0.0/0 route."
+  type = list(object({
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = optional(string)
+  }))
+  default = []
+}
