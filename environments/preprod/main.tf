@@ -32,6 +32,9 @@ module "networking" {
       address_prefixes                  = ["10.102.16.0/24"]
       private_endpoint_network_policies = "Enabled"
     }
+    "snet-appgw" = {
+      address_prefixes = ["10.102.17.0/24"]
+    }
   }
 
   network_security_groups = {
@@ -212,6 +215,9 @@ module "aks" {
   private_cluster_enabled = true
   private_dns_zone_id     = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
 
+  ingress_type = "agic"
+  appgw_id     = module.appgw.application_gateway_id
+
   identity_type             = "UserAssigned"
   user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
   admin_group_object_ids    = var.admin_group_object_ids
@@ -258,7 +264,24 @@ module "aks" {
   tags = local.default_tags
 }
 
+# ---------------------------------------------------------------------------
+# Application Gateway
+# ---------------------------------------------------------------------------
 
+module "appgw" {
+  source = "../../modules/appgw"
+
+  name                       = "agw-${local.name_prefix}"
+  resource_group_name        = azurerm_resource_group.this.name
+  location                   = azurerm_resource_group.this.location
+  subnet_id                  = module.networking.subnet_ids["snet-appgw"]
+  log_analytics_workspace_id = module.log_analytics.workspace_id
+
+  # In Preprod, we demonstrate AGIC integration
+  ingress_type = "agic"
+
+  tags = local.default_tags
+}
 
 module "monitor" {
   source = "../../modules/monitor"

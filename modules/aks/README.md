@@ -22,6 +22,7 @@ No modules.
 |------|------|
 | [azurerm_kubernetes_cluster.aks](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster) | resource |
 | [azurerm_kubernetes_cluster_node_pool.node_pool](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster_node_pool) | resource |
+| [azurerm_role_assignment.agic_appgw_contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_assignment.cluster_network_contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 
 ## Inputs
@@ -30,6 +31,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_group_object_ids"></a> [admin\_group\_object\_ids](#input\_admin\_group\_object\_ids) | List of Azure AD group object IDs for cluster admin access. | `list(string)` | `[]` | no |
 | <a name="input_api_server_authorized_ip_ranges"></a> [api\_server\_authorized\_ip\_ranges](#input\_api\_server\_authorized\_ip\_ranges) | List of authorized IP ranges to access the API server. Applies only when private\_cluster\_enabled is false. | `list(string)` | `[]` | no |
+| <a name="input_appgw_id"></a> [appgw\_id](#input\_appgw\_id) | Resource ID of the Application Gateway for AGIC. Required when ingress\_type is 'agic'. | `string` | `null` | no |
 | <a name="input_automatic_upgrade_channel"></a> [automatic\_upgrade\_channel](#input\_automatic\_upgrade\_channel) | Automatic upgrade channel. Options: none, patch, rapid, stable, node-image. | `string` | `"stable"` | no |
 | <a name="input_azure_policy_enabled"></a> [azure\_policy\_enabled](#input\_azure\_policy\_enabled) | Enable Azure Policy for Kubernetes. | `bool` | `true` | no |
 | <a name="input_azure_rbac_enabled"></a> [azure\_rbac\_enabled](#input\_azure\_rbac\_enabled) | Enable Azure RBAC for Kubernetes authorization. | `bool` | `true` | no |
@@ -39,6 +41,7 @@ No modules.
 | <a name="input_identity_type"></a> [identity\_type](#input\_identity\_type) | Identity type for the AKS cluster. | `string` | `"UserAssigned"` | no |
 | <a name="input_image_cleaner_enabled"></a> [image\_cleaner\_enabled](#input\_image\_cleaner\_enabled) | Enable image cleaner to remove unused images from nodes. | `bool` | `true` | no |
 | <a name="input_image_cleaner_interval_hours"></a> [image\_cleaner\_interval\_hours](#input\_image\_cleaner\_interval\_hours) | Interval in hours for the image cleaner. | `number` | `48` | no |
+| <a name="input_ingress_type"></a> [ingress\_type](#input\_ingress\_type) | Type of ingress controller integration: 'none', 'agic', or 'nginx'. | `string` | `"nginx"` | no |
 | <a name="input_key_vault_secrets_provider_enabled"></a> [key\_vault\_secrets\_provider\_enabled](#input\_key\_vault\_secrets\_provider\_enabled) | Enable Azure Key Vault Secrets Provider (CSI driver). | `bool` | `false` | no |
 | <a name="input_kubelet_identity"></a> [kubelet\_identity](#input\_kubelet\_identity) | Kubelet identity configuration. If provided, uses a separate identity for kubelet. | <pre>object({<br/>    client_id                 = string<br/>    object_id                 = string<br/>    user_assigned_identity_id = string<br/>  })</pre> | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version for the cluster. Use 'az aks get-versions' to list available versions. | `string` | `null` | no |

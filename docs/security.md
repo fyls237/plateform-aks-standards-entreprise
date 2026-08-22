@@ -112,6 +112,15 @@ Applications access Key Vault secrets via:
 | Data | Key Vault for secrets | all |
 | Monitoring | Audit logs + alerts | all |
 
+### Edge Security & WAF
+
+An **Azure Application Gateway v2** is placed at the edge of the virtual network to inspect and filter all incoming HTTP/S traffic before it reaches the AKS cluster.
+
+1. **Web Application Firewall (WAF)**: Configured in **Prevention** mode using the OWASP 3.2 managed rule set to automatically block common attacks (e.g., SQL injection, Cross-Site Scripting).
+2. **TLS Termination**: The AppGW acts as the TLS termination point, enforcing a minimum of TLS 1.2. Traffic can optionally be re-encrypted before being forwarded to the internal NGINX load balancer.
+3. **FinOps (Autoscaling)**: The Application Gateway is configured with `autoscale_configuration` (`min_capacity` and `max_capacity`) to scale dynamically with load, preventing unnecessary costs during idle periods.
+4. **Least Privilege Integration (AGIC)**: If the native AGIC add-on is used instead of NGINX, the AGIC pod uses a workload identity that is strictly assigned the **Contributor** role over the Application Gateway resource, allowing it to modify rules without broad VNet permissions.
+
 ### API Server Security
 
 - **Private Cluster (Production)**: The AKS API server has **no public IP**. Access is via private endpoint within the VNet. Use `az aks command invoke` or a jumpbox for management.

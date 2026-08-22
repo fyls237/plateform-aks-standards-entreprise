@@ -285,6 +285,8 @@ module "aks" {
   private_dns_zone_id                 = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
   private_cluster_public_fqdn_enabled = false
 
+  ingress_type = "nginx"
+
   # Identity
   identity_type             = "UserAssigned"
   user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
@@ -353,6 +355,26 @@ module "aks" {
 # ---------------------------------------------------------------------------
 
 
+
+# ---------------------------------------------------------------------------
+# Application Gateway
+# ---------------------------------------------------------------------------
+
+module "appgw" {
+  source = "../../modules/appgw"
+
+  name                       = "agw-${local.name_prefix}"
+  resource_group_name        = azurerm_resource_group.this.name
+  location                   = azurerm_resource_group.this.location
+  subnet_id                  = module.networking.subnet_ids["snet-appgw"]
+  log_analytics_workspace_id = module.log_analytics.workspace_id
+
+  # In Prod, we demonstrate NGINX ILB integration
+  ingress_type = "nginx"
+  nginx_ilb_ip = "10.103.0.250" # Reserved IP in snet-aks-nodes (10.103.0.0/20)
+
+  tags = local.default_tags
+}
 
 # ---------------------------------------------------------------------------
 # Monitoring & Alerts

@@ -37,10 +37,15 @@ This is a reusable, modular, and maintainable platform starter that mirrors what
 graph TB
     subgraph "Azure Subscription"
         subgraph "Resource Group"
+            subgraph "Edge Security"
+                APPGW["🛡️ Application Gateway (WAF)"]
+            end
+
             subgraph "Networking"
                 VNET["🌐 Virtual Network"]
                 SNET_AKS["Subnet: AKS Nodes"]
                 SNET_PE["Subnet: Private Endpoints"]
+                SNET_AGW["Subnet: AppGW"]
                 NSG["Network Security Groups"]
             end
 
@@ -72,8 +77,11 @@ graph TB
         end
     end
 
+    APPGW --> SNET_AGW
+    SNET_AGW --> AKS
     VNET --> SNET_AKS --> AKS
     VNET --> SNET_PE
+    VNET --> SNET_AGW
     NSG --> SNET_AKS
     MI --> AKS
     WI --> MI
@@ -95,6 +103,7 @@ graph TB
 
 | Component | Purpose | Azure Service |
 |-----------|---------|---------------|
+| **Edge Security** | Web Application Firewall (WAF) & L7 routing | Application Gateway v2 |
 | **Networking** | Network isolation, segmentation, security | VNet, NSG, UDR, Private Endpoints |
 | **AKS Cluster** | Container orchestration with enterprise features | Azure Kubernetes Service |
 | **Container Registry** | Secure image storage and distribution | Azure Container Registry (Premium) |
@@ -163,6 +172,7 @@ graph TB
 .
 ├── modules/                    # Reusable Terraform modules
 │   ├── aks/                    # AKS cluster with node pools
+│   ├── appgw/                  # Application Gateway & WAF
 │   ├── networking/             # VNet, Subnets, NSGs, Route Tables
 │   ├── acr/                    # Azure Container Registry
 │   ├── keyvault/               # Azure Key Vault
@@ -255,6 +265,9 @@ kubectl get nodes
 
 ### `modules/networking`
 Virtual Network with configurable subnets, NSGs with dynamic security rules, route tables for UDR scenarios, and diagnostic settings.
+
+### `modules/appgw`
+Application Gateway v2 acting as a Web Application Firewall (WAF) with OWASP rules, autoscaling, and dynamic routing to AKS (via AGIC or NGINX).
 
 ### `modules/aks`
 AKS cluster with Azure CNI Overlay, user-assigned managed identity, Workload Identity, Azure RBAC, private cluster option, autoscaler, maintenance windows, and multiple node pool support.

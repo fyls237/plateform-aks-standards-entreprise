@@ -75,6 +75,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
     dns_service_ip      = var.dns_service_ip
   }
 
+  dynamic "ingress_application_gateway" {
+    for_each = var.ingress_type == "agic" ? [1] : []
+
+    content {
+      gateway_id = var.appgw_id
+    }
+  }
+
   # Default (System) Node Pool
   default_node_pool {
     name                         = var.default_node_pool.name
@@ -203,4 +211,16 @@ resource "azurerm_role_assignment" "cluster_network_contributor" {
   scope                = var.vnet_subnet_id
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+}
+
+# ---------------------------------------------------------------------------
+# Role Assignment — Grant AGIC identity Contributor on AppGW
+# ---------------------------------------------------------------------------
+
+resource "azurerm_role_assignment" "agic_appgw_contributor" {
+  count = var.ingress_type == "agic" ? 1 : 0
+
+  scope                = var.appgw_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_kubernetes_cluster.aks.ingress_application_gateway[0].ingress_application_gateway_identity[0].object_id
 }
