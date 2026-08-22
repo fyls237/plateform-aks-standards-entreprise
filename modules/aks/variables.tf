@@ -206,6 +206,23 @@ variable "admin_group_object_ids" {
 
 # ---- Add-ons & Governance ----
 
+variable "ingress_type" {
+  description = "Type of ingress controller integration: 'none', 'agic', or 'nginx'."
+  type        = string
+  default     = "nginx"
+
+  validation {
+    condition     = contains(["none", "agic", "nginx"], var.ingress_type)
+    error_message = "ingress_type must be one of: none, agic, nginx."
+  }
+}
+
+variable "appgw_id" {
+  description = "Resource ID of the Application Gateway for AGIC. Required when ingress_type is 'agic'."
+  type        = string
+  default     = null
+}
+
 variable "azure_policy_enabled" {
   description = "Enable Azure Policy for Kubernetes."
   type        = bool

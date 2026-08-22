@@ -93,6 +93,24 @@ Private DNS zones are linked to the VNet, ensuring that:
 3. No traffic leaves the Azure backbone
 4. NSG rules on the subnets control access
 
+## Ingress Architecture (Edge Security)
+
+The platform employs **Azure Application Gateway v2** acting as a Web Application Firewall (WAF) at the edge, coupled with an Ingress Controller inside the AKS cluster.
+
+To support different client architectures and ensure maximum modularity, the platform offers two ingress integration patterns:
+
+### 1. NGINX Ingress behind AppGW (Recommended)
+This decoupled pattern uses the Application Gateway solely as a WAF and edge router. Traffic is routed from the AppGW backend pool directly to the private IP of an NGINX Internal Load Balancer (ILB) running in the AKS node subnet.
+- **Pros**: Full support for all Kubernetes native features (like `ExternalName`), fast configuration reconciliation, and the ability to share the Application Gateway with other non-AKS backends.
+- **Cons**: Requires managing two routing layers (AppGW rules + NGINX Ingress rules).
+
+### 2. Application Gateway Ingress Controller (AGIC)
+This natively integrated pattern deploys the AGIC add-on inside AKS. The add-on dynamically configures the Application Gateway's backend pools, listeners, and routing rules based on standard Kubernetes Ingress resources.
+- **Pros**: Single layer of routing to manage, tightly integrated into Azure.
+- **Cons**: AGIC assumes full ownership of the AppGW, preventing it from being shared with other resources, and does not support features like `ExternalName`.
+
+The choice between these patterns is controlled via the `ingress_type` variable (`"nginx"` or `"agic"`) in the `aks` and `appgw` modules.
+
 ## Hub & Spoke Integration
 
 The networking module supports **optional** integration with an enterprise Hub VNet in a Hub & Spoke topology. When enabled, it provisions VNet peering and User Defined Routes (UDR) for egress through the Hub's Azure Firewall.

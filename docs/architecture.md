@@ -10,10 +10,16 @@ The AKS Platform Starter provides a modular, enterprise-grade foundation for dep
 graph TB
     subgraph "Azure Subscription"
         subgraph "Resource Group"
+            subgraph "Edge Security"
+                APPGW["🛡️ Application Gateway (WAF)"]
+                PIP["Public IP"]
+            end
+
             subgraph "Networking"
                 VNET["Virtual Network"]
                 SNET_AKS["Subnet: AKS Nodes"]
                 SNET_PE["Subnet: Private Endpoints"]
+                SNET_AGW["Subnet: AppGW"]
                 NSG_AKS["NSG: AKS"]
                 NSG_PE["NSG: Private Endpoints"]
                 RT["Route Table"]
@@ -58,8 +64,13 @@ graph TB
         end
     end
 
+    PIP --> APPGW
+    APPGW --> SNET_AGW
+    SNET_AGW --> AKS
+
     VNET --> SNET_AKS
     VNET --> SNET_PE
+    VNET --> SNET_AGW
     SNET_AKS --> NSG_AKS
     SNET_PE --> NSG_PE
     SNET_AKS --> RT
@@ -95,6 +106,7 @@ graph TB
     style KV fill:#0078D4,stroke:#fff,color:#fff
     style LAW fill:#0078D4,stroke:#fff,color:#fff
     style VNET fill:#00BCF2,stroke:#fff,color:#fff
+    style APPGW fill:#F39C12,stroke:#fff,color:#fff
 ```
 
 ## Component Interaction
@@ -107,6 +119,7 @@ graph TB
 4. **AKS** → Log Analytics: Container Insights agent forwards logs and metrics
 5. **Private DNS** → VNet: Private DNS zones resolve service FQDNs to private IPs (AKS API Server, ACR, Key Vault)
 6. **Monitor** → AKS: Diagnostic settings capture control plane logs; metric alerts fire on threshold
+7. **Edge Security** → AKS: Application Gateway inspects incoming traffic using WAF and routes it to the AKS Ingress Controller (via AGIC or NGINX ILB).
 
 ### Module Dependencies
 
@@ -115,19 +128,23 @@ graph LR
     NET["networking"] --> AKS["aks"]
     NET --> ACR["acr"]
     NET --> KV["keyvault"]
+    NET --> APP["appgw"]
     LOG["log-analytics"] --> AKS
     LOG --> ACR
     LOG --> KV
     LOG --> MON["monitor"]
     LOG --> NET
+    LOG --> APP
     ID["identities"] --> AKS
     DNS["private-dns"] --> ACR
     DNS --> KV
     DNS --> AKS
     NET --> DNS
     AKS --> MON
+    APP <--> AKS
 
     style AKS fill:#326CE5,stroke:#fff,color:#fff
+    style APP fill:#F39C12,stroke:#fff,color:#fff
 ```
 
 ## Networking Architecture
