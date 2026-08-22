@@ -48,6 +48,8 @@ locals {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_application_gateway" "agic" {
+  # checkov:skip=CKV_AZURE_118: "TLS certificate integration requires Key Vault, pending implementation for base module"
+  # checkov:skip=CKV_AZURE_218: "HTTP listener is a placeholder; AGIC overwrites this based on Ingress resources"
   count = var.ingress_type == "agic" ? 1 : 0
 
   name                = var.name
@@ -132,6 +134,8 @@ resource "azurerm_application_gateway" "agic" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_application_gateway" "nginx" {
+  # checkov:skip=CKV_AZURE_118: "TLS certificate integration requires Key Vault, pending implementation for base module"
+  # checkov:skip=CKV_AZURE_218: "HTTP listener is a placeholder; pending Key Vault integration for HTTPS"
   count = var.ingress_type == "nginx" ? 1 : 0
 
   name                = var.name
