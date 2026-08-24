@@ -117,7 +117,7 @@ Applications access Key Vault secrets via:
 An **Azure Application Gateway v2** is placed at the edge of the virtual network to inspect and filter all incoming HTTP/S traffic before it reaches the AKS cluster.
 
 1. **Web Application Firewall (WAF)**: Configured in **Prevention** mode using the OWASP 3.2 managed rule set to automatically block common attacks (e.g., SQL injection, Cross-Site Scripting).
-2. **TLS Termination**: The AppGW acts as the TLS termination point, enforcing a minimum of TLS 1.2. Traffic can optionally be re-encrypted before being forwarded to the internal NGINX load balancer.
+2. **TLS Termination (Zero-Trust)**: The AppGW acts as the TLS termination point. Certificates are **never** stored in Terraform state or code. Instead, the Application Gateway is assigned a **User-Assigned Managed Identity** with the `Key Vault Secrets User` role, allowing it to dynamically fetch and renew TLS certificates directly from Azure Key Vault.
 3. **FinOps (Autoscaling)**: The Application Gateway is configured with `autoscale_configuration` (`min_capacity` and `max_capacity`) to scale dynamically with load, preventing unnecessary costs during idle periods.
 4. **Least Privilege Integration (AGIC)**: If the native AGIC add-on is used instead of NGINX, the AGIC pod uses a workload identity that is strictly assigned the **Contributor** role over the Application Gateway resource, allowing it to modify rules without broad VNet permissions.
 
