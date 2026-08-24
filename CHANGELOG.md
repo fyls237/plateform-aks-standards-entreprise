@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.8.0...v0.9.0) (2026-08-24)
+
+
+### Features
+
+* **security:** implement native tls termination via key vault for application gateway ([#44](https://github.com/fyls237/plateform-aks-standards-entreprise/issues/44)) ([eebeaea](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/eebeaeaf5a5ea5b9ad6651ed6406bdd6f357fd7f))
+
 ## [0.8.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.7.0...v0.8.0) (2026-08-22)
 
 
