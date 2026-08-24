@@ -62,6 +62,14 @@ resource "azurerm_application_gateway" "agic" {
     tier = "WAF_v2"
   }
 
+  dynamic "identity" {
+    for_each = length(var.identity_ids) > 0 ? [1] : []
+    content {
+      type         = "UserAssigned"
+      identity_ids = var.identity_ids
+    }
+  }
+
   autoscale_configuration {
     min_capacity = var.autoscale_min_capacity
     max_capacity = var.autoscale_max_capacity
@@ -73,8 +81,16 @@ resource "azurerm_application_gateway" "agic" {
   }
 
   frontend_port {
-    name = local.frontend_port_name
+    name = "${local.frontend_port_name}-http"
     port = 80
+  }
+
+  dynamic "frontend_port" {
+    for_each = var.key_vault_secret_id != null ? [1] : []
+    content {
+      name = "${local.frontend_port_name}-https"
+      port = 443
+    }
   }
 
   frontend_ip_configuration {
@@ -98,8 +114,17 @@ resource "azurerm_application_gateway" "agic" {
   http_listener {
     name                           = local.listener_name
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
+    frontend_port_name             = var.key_vault_secret_id != null ? "${local.frontend_port_name}-https" : "${local.frontend_port_name}-http"
+    protocol                       = var.key_vault_secret_id != null ? "Https" : "Http"
+    ssl_certificate_name           = var.key_vault_secret_id != null ? "${var.name}-cert" : null
+  }
+
+  dynamic "ssl_certificate" {
+    for_each = var.key_vault_secret_id != null ? [1] : []
+    content {
+      name                = "${var.name}-cert"
+      key_vault_secret_id = var.key_vault_secret_id
+    }
   }
 
   request_routing_rule {
@@ -148,6 +173,14 @@ resource "azurerm_application_gateway" "nginx" {
     tier = "WAF_v2"
   }
 
+  dynamic "identity" {
+    for_each = length(var.identity_ids) > 0 ? [1] : []
+    content {
+      type         = "UserAssigned"
+      identity_ids = var.identity_ids
+    }
+  }
+
   autoscale_configuration {
     min_capacity = var.autoscale_min_capacity
     max_capacity = var.autoscale_max_capacity
@@ -159,8 +192,16 @@ resource "azurerm_application_gateway" "nginx" {
   }
 
   frontend_port {
-    name = local.frontend_port_name
+    name = "${local.frontend_port_name}-http"
     port = 80
+  }
+
+  dynamic "frontend_port" {
+    for_each = var.key_vault_secret_id != null ? [1] : []
+    content {
+      name = "${local.frontend_port_name}-https"
+      port = 443
+    }
   }
 
   frontend_ip_configuration {
@@ -185,8 +226,17 @@ resource "azurerm_application_gateway" "nginx" {
   http_listener {
     name                           = local.listener_name
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
+    frontend_port_name             = var.key_vault_secret_id != null ? "${local.frontend_port_name}-https" : "${local.frontend_port_name}-http"
+    protocol                       = var.key_vault_secret_id != null ? "Https" : "Http"
+    ssl_certificate_name           = var.key_vault_secret_id != null ? "${var.name}-cert" : null
+  }
+
+  dynamic "ssl_certificate" {
+    for_each = var.key_vault_secret_id != null ? [1] : []
+    content {
+      name                = "${var.name}-cert"
+      key_vault_secret_id = var.key_vault_secret_id
+    }
   }
 
   request_routing_rule {

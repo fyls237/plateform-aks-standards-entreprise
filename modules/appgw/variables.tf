@@ -72,3 +72,15 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "key_vault_secret_id" {
+  description = "The Secret ID of the TLS certificate in Key Vault. If provided, configures an HTTPS listener."
+  type        = string
+  default     = null
+}
+
+variable "identity_ids" {
+  description = "List of User Assigned Managed Identity IDs to assign to the Application Gateway (needed to read from Key Vault)."
+  type        = list(string)
+  default     = []
+}

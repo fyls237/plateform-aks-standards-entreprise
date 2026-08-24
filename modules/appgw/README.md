@@ -32,7 +32,9 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_autoscale_max_capacity"></a> [autoscale\_max\_capacity](#input\_autoscale\_max\_capacity) | Maximum capacity for autoscaling. | `number` | `3` | no |
 | <a name="input_autoscale_min_capacity"></a> [autoscale\_min\_capacity](#input\_autoscale\_min\_capacity) | Minimum capacity for autoscaling. | `number` | `1` | no |
+| <a name="input_identity_ids"></a> [identity\_ids](#input\_identity\_ids) | List of User Assigned Managed Identity IDs to assign to the Application Gateway (needed to read from Key Vault). | `list(string)` | `[]` | no |
 | <a name="input_ingress_type"></a> [ingress\_type](#input\_ingress\_type) | Type of ingress integration: 'agic' or 'nginx'. | `string` | `"nginx"` | no |
+| <a name="input_key_vault_secret_id"></a> [key\_vault\_secret\_id](#input\_key\_vault\_secret\_id) | The Secret ID of the TLS certificate in Key Vault. If provided, configures an HTTPS listener. | `string` | `null` | no |
 | <a name="input_location"></a> [location](#input\_location) | Azure region. | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id) | Log Analytics Workspace ID for diagnostic settings. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name of the Application Gateway. | `string` | n/a | yes |
