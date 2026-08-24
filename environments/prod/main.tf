@@ -185,6 +185,7 @@ module "identities" {
   managed_identities = {
     "id-aks-${local.name_prefix}"     = {}
     "id-kubelet-${local.name_prefix}" = {}
+    "id-appgw-${local.name_prefix}"   = {}
   }
 
   role_assignments = [
@@ -207,6 +208,11 @@ module "identities" {
       scope                = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
       role_definition_name = "Private DNS Zone Contributor"
       identity_key         = "id-aks-${local.name_prefix}"
+    },
+    {
+      scope                = module.keyvault.key_vault_id
+      role_definition_name = "Key Vault Secrets User"
+      identity_key         = "id-appgw-${local.name_prefix}"
     }
   ]
 
@@ -372,6 +378,10 @@ module "appgw" {
   # In Prod, we demonstrate NGINX ILB integration
   ingress_type = "nginx"
   nginx_ilb_ip = "10.103.0.250" # Reserved IP in snet-aks-nodes (10.103.0.0/20)
+
+  # Identity and TLS Integration (Dynamic HTTPS Listener)
+  identity_ids        = [module.identities.identity_ids["id-appgw-${local.name_prefix}"]]
+  key_vault_secret_id = "https://${local.keyvault_name}.vault.azure.net/secrets/appgw-tls-cert/dummy-version-id" # Placeholder: Replace with actual KV Secret URL
 
   tags = local.default_tags
 }
