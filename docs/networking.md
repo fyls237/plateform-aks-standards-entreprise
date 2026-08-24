@@ -95,7 +95,7 @@ Private DNS zones are linked to the VNet, ensuring that:
 
 ## Ingress Architecture (Edge Security)
 
-The platform employs **Azure Application Gateway v2** acting as a Web Application Firewall (WAF) at the edge, coupled with an Ingress Controller inside the AKS cluster.
+The platform employs **Azure Application Gateway v2** acting as a Web Application Firewall (WAF) at the edge, coupled with an Ingress Controller inside the AKS cluster. All external traffic is enforced over HTTPS. TLS certificates are managed centrally in **Azure Key Vault** and accessed securely by the Application Gateway via a **User-Assigned Managed Identity**.
 
 To support different client architectures and ensure maximum modularity, the platform offers two ingress integration patterns:
 

@@ -267,7 +267,7 @@ kubectl get nodes
 Virtual Network with configurable subnets, NSGs with dynamic security rules, route tables for UDR scenarios, and diagnostic settings.
 
 ### `modules/appgw`
-Application Gateway v2 acting as a Web Application Firewall (WAF) with OWASP rules, autoscaling, and dynamic routing to AKS (via AGIC or NGINX).
+Application Gateway v2 acting as a Web Application Firewall (WAF) with OWASP rules, autoscaling, zero-trust TLS termination via Key Vault, and dynamic routing to AKS (via AGIC or NGINX).
 
 ### `modules/aks`
 AKS cluster with Azure CNI Overlay, user-assigned managed identity, Workload Identity, Azure RBAC, private cluster option, autoscaler, maintenance windows, and multiple node pool support.
@@ -389,7 +389,7 @@ Examples:
 | **Network** | Private cluster + NSG deny-all + Private endpoints |
 | **Secrets** | Key Vault with RBAC + Purge protection |
 | **Audit** | Log Analytics + Diagnostic settings on all resources |
-| **Encryption** | TLS in transit, Azure-managed encryption at rest |
+| **Encryption** | Zero-Trust TLS in transit via Key Vault Managed Identity, Azure-managed encryption at rest |
 
 > See [docs/security.md](docs/security.md) for the complete security architecture.
 
