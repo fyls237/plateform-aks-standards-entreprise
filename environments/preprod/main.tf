@@ -35,6 +35,12 @@ module "networking" {
     "snet-appgw" = {
       address_prefixes = ["10.102.17.0/24"]
     }
+    "AzureBastionSubnet" = {
+      address_prefixes = ["10.102.18.0/26"]
+    }
+    "snet-jumphost" = {
+      address_prefixes = ["10.102.18.64/27"]
+    }
   }
 
   network_security_groups = {
@@ -60,6 +66,116 @@ module "networking" {
           destination_port_range     = "*"
           source_address_prefix      = "*"
           destination_address_prefix = "*"
+        }
+      ]
+    }
+    "nsg-jumphost" = {
+      subnet_key = "snet-jumphost"
+      rules = [
+        {
+          name                       = "AllowSSHFromBastion"
+          priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          destination_port_range     = "22"
+          source_address_prefix      = "10.102.18.0/26" # AzureBastionSubnet CIDR
+          destination_address_prefix = "*"
+        },
+        {
+          name                       = "DenyAllInbound"
+          priority                   = 4096
+          direction                  = "Inbound"
+          access                     = "Deny"
+          protocol                   = "*"
+          destination_port_range     = "*"
+          source_address_prefix      = "*"
+          destination_address_prefix = "*"
+        }
+      ]
+    }
+    "nsg-bastion" = {
+      subnet_key = "AzureBastionSubnet"
+      rules = [
+        {
+          name                       = "AllowHttpsInbound"
+          priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          destination_port_range     = "443"
+          source_address_prefix      = "Internet"
+          destination_address_prefix = "*"
+        },
+        {
+          name                       = "AllowGatewayManagerInbound"
+          priority                   = 110
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          destination_port_range     = "443"
+          source_address_prefix      = "GatewayManager"
+          destination_address_prefix = "*"
+        },
+        {
+          name                       = "AllowAzureLoadBalancerInbound"
+          priority                   = 120
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          destination_port_range     = "443"
+          source_address_prefix      = "AzureLoadBalancer"
+          destination_address_prefix = "*"
+        },
+        {
+          name                       = "AllowBastionHostCommunication"
+          priority                   = 130
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          destination_port_ranges    = ["8080", "5701"]
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "VirtualNetwork"
+        },
+        {
+          name                       = "AllowSshRdpOutbound"
+          priority                   = 100
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          destination_port_ranges    = ["22", "3389"]
+          source_address_prefix      = "*"
+          destination_address_prefix = "VirtualNetwork"
+        },
+        {
+          name                       = "AllowAzureCloudOutbound"
+          priority                   = 110
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          destination_port_range     = "443"
+          source_address_prefix      = "*"
+          destination_address_prefix = "AzureCloud"
+        },
+        {
+          name                       = "AllowBastionCommunicationOutbound"
+          priority                   = 120
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          destination_port_ranges    = ["8080", "5701"]
+          source_address_prefix      = "VirtualNetwork"
+          destination_address_prefix = "VirtualNetwork"
+        },
+        {
+          name                       = "AllowGetSessionInformation"
+          priority                   = 130
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "*"
+          destination_port_range     = "80"
+          source_address_prefix      = "*"
+          destination_address_prefix = "Internet"
         }
       ]
     }
@@ -279,6 +395,29 @@ module "appgw" {
 
   # In Preprod, we demonstrate AGIC integration
   ingress_type = "agic"
+
+  tags = local.default_tags
+}
+
+# ---------------------------------------------------------------------------
+# Secure Administration (Bastion & Jumphost)
+# ---------------------------------------------------------------------------
+
+module "bastion" {
+  source = "../../modules/bastion"
+
+  name_prefix         = local.name_prefix
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+
+  bastion_subnet_id  = module.networking.subnet_ids["AzureBastionSubnet"]
+  jumphost_subnet_id = module.networking.subnet_ids["snet-jumphost"]
+
+  bastion_sku            = "Standard"
+  admin_group_object_ids = var.admin_group_object_ids
+
+  # Auditability
+  log_analytics_workspace_id = module.log_analytics.workspace_id
 
   tags = local.default_tags
 }
