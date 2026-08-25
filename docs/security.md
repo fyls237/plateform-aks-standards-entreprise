@@ -43,6 +43,15 @@ sequenceDiagram
     Pod->>Azure: Access resource with token
 ```
 
+### Secure Administration (Bastion & Jumphost)
+
+To securely manage the private AKS cluster (which has no public API server), the platform provisions a **Zero-Trust Linux Jumphost**:
+
+- **No Public IP**: The Jumphost resides in a dedicated private subnet (`snet-jumphost`).
+- **Azure Bastion (Standard)**: Inbound SSH access is only possible via Azure Bastion, which provides secure, seamless RDP/SSH connectivity directly from the Azure portal or native terminal (`az network bastion tunnel`).
+- **No SSH Keys**: The Jumphost uses the **Azure AD SSH Login** extension (`AADSSHLoginForLinux`). Administrators authenticate with their Azure AD credentials (enforcing MFA and Conditional Access policies). Access is granted via the `Virtual Machine Administrator Login` RBAC role.
+- **Pre-configured Tooling**: The VM automatically installs `kubectl`, `kubelogin`, `helm`, and `azure-cli` via cloud-init.
+
 ## RBAC Model
 
 ### Kubernetes Authorization

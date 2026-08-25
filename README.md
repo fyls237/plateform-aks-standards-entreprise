@@ -56,6 +56,11 @@ graph TB
                 MEM["Memory Pool"]
             end
 
+            subgraph "Secure Admin"
+                BASTION["🛡️ Azure Bastion"]
+                JUMP["💻 Jumphost VM"]
+            end
+
             subgraph "Security"
                 MI["🔐 Managed Identities"]
                 KV["🔑 Key Vault"]
@@ -82,6 +87,8 @@ graph TB
     VNET --> SNET_AKS --> AKS
     VNET --> SNET_PE
     VNET --> SNET_AGW
+    BASTION --> JUMP
+    JUMP -.->|kubectl/ssh| AKS
     NSG --> SNET_AKS
     MI --> AKS
     WI --> MI
@@ -106,6 +113,7 @@ graph TB
 | **Edge Security** | Web Application Firewall (WAF) & L7 routing | Application Gateway v2 |
 | **Networking** | Network isolation, segmentation, security | VNet, NSG, UDR, Private Endpoints |
 | **AKS Cluster** | Container orchestration with enterprise features | Azure Kubernetes Service |
+| **Secure Admin** | Zero-trust cluster access without public IPs | Azure Bastion + Linux Jumphost |
 | **Container Registry** | Secure image storage and distribution | Azure Container Registry (Premium) |
 | **Key Vault** | Secrets, keys, and certificates management | Azure Key Vault |
 | **Identities** | Zero-trust identity for cluster and workloads | Managed Identity, Workload Identity |
