@@ -95,6 +95,7 @@ resource "tls_private_key" "dummy" {
 
 # Jumphost VM
 resource "azurerm_linux_virtual_machine" "jump" {
+  # checkov:skip=CKV_AZURE_50: "VM Extensions are required to install the Microsoft AAD SSH Login extension for Zero-Trust access."
   name                = "vm-jump-${var.name_prefix}"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -160,6 +161,7 @@ resource "azurerm_linux_virtual_machine" "jump" {
 
 # AAD Login Extension
 resource "azurerm_virtual_machine_extension" "aad_login" {
+  # checkov:skip=CKV_AZURE_50: "Microsoft AAD SSH Login extension is required for keyless, Zero-Trust Azure AD authentication."
   name                       = "AADSSHLoginForLinux"
   virtual_machine_id         = azurerm_linux_virtual_machine.jump.id
   publisher                  = "Microsoft.Azure.ActiveDirectory"
