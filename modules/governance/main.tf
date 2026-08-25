@@ -6,7 +6,7 @@
 # Using IDs prevents issues with Microsoft renaming policies and slow data sources.
 resource "azurerm_resource_group_policy_assignment" "compliance" {
   # We use the last segment of the ID (the GUID) to make a unique, stable assignment name.
-  for_each             = toset(var.compliance_initiative_ids)
+  for_each = toset(var.compliance_initiative_ids)
 
   name                 = substr("pol-${split("/", each.value)[length(split("/", each.value)) - 1]}", 0, 24)
   resource_group_id    = var.resource_group_id
