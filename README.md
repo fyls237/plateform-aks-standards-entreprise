@@ -271,8 +271,14 @@ kubectl get nodes
 
 ## 📦 Modules
 
+### `modules/governance`
+Zero-Trust governance module designed for Brownfield environments. Dynamically assigns Azure Policy initiatives (e.g., Microsoft Cloud Security Benchmark) at the Resource Group scope, enforces Data Sovereignty (Allowed Locations), and natively blocks unauthorized resources (e.g., Deny Public IPs).
+
 ### `modules/networking`
 Virtual Network with configurable subnets, NSGs with dynamic security rules, route tables for UDR scenarios, and diagnostic settings.
+
+### `modules/bastion`
+Secure Zero-Trust administration module. Deploys Azure Bastion and a Linux Jumphost with Azure AD Keyless SSH login and pre-installed cloud-native tooling (kubectl, helm, kubelogin). No public IPs for VMs.
 
 ### `modules/appgw`
 Application Gateway v2 acting as a Web Application Firewall (WAF) with OWASP rules, autoscaling, zero-trust TLS termination via Key Vault, and dynamic routing to AKS (via AGIC or NGINX).
@@ -478,7 +484,7 @@ Key decisions documented as ADRs in [docs/decisions.md](docs/decisions.md):
 
 See [docs/roadmap.md](docs/roadmap.md) for the full roadmap.
 
-**Short-term**: FluxCD/ArgoCD, Azure Policy, Defender for Cloud
+**Short-term**: FluxCD/ArgoCD (GitOps)
 **Medium-term**: Prometheus/Grafana, cert-manager, ExternalDNS, Velero
 **Long-term**: Multi-region, Service Mesh, Backstage, Crossplane
 

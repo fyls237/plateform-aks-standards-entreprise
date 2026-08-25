@@ -21,9 +21,15 @@ variable "project" {
 }
 
 variable "admin_group_object_ids" {
-  description = "Azure AD group object IDs for AKS cluster admin access."
+  description = "List of Azure AD Group Object IDs to grant 'Virtual Machine Administrator Login' access on the Jumphost and Cluster Admin on AKS."
   type        = list(string)
   default     = []
+}
+
+variable "compliance_initiative_ids" {
+  description = "List of built-in Azure Policy Initiative IDs to assign to the Resource Group. Can be customized per client."
+  type        = list(string)
+  default     = ["/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"]
 }
 
 variable "alert_email_receivers" {

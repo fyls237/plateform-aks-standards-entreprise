@@ -529,6 +529,30 @@ module "bastion" {
 }
 
 # ---------------------------------------------------------------------------
+# Governance & Compliance (Brownfield Approach)
+# ---------------------------------------------------------------------------
+
+module "governance" {
+  source = "../../modules/governance"
+
+  name_prefix               = local.name_prefix
+  resource_group_id         = azurerm_resource_group.this.id
+  compliance_initiative_ids = var.compliance_initiative_ids
+
+  # Strictly deny Public IPs, but exempt the Authorized edge entry points
+  deny_public_ip_enabled = true
+  exempt_public_ip_ids = [
+    module.appgw.public_ip_id,
+    module.bastion.bastion_public_ip_id
+  ]
+
+  # Kept false by default to support strict Brownfield (RG-Contributor only)
+  enable_subscription_defender_plans = false
+
+  tags = local.default_tags
+}
+
+# ---------------------------------------------------------------------------
 # Monitoring & Alerts
 # ---------------------------------------------------------------------------
 

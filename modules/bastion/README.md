@@ -53,6 +53,7 @@ No modules.
 |------|-------------|
 | <a name="output_bastion_id"></a> [bastion\_id](#output\_bastion\_id) | Resource ID of the Bastion Host. |
 | <a name="output_bastion_public_ip"></a> [bastion\_public\_ip](#output\_bastion\_public\_ip) | Public IP address of the Bastion Host. |
+| <a name="output_bastion_public_ip_id"></a> [bastion\_public\_ip\_id](#output\_bastion\_public\_ip\_id) | Resource ID of the Bastion Public IP. |
 | <a name="output_jumphost_private_ip"></a> [jumphost\_private\_ip](#output\_jumphost\_private\_ip) | Private IP address of the Jumphost Virtual Machine. |
 | <a name="output_jumphost_vm_id"></a> [jumphost\_vm\_id](#output\_jumphost\_vm\_id) | Resource ID of the Jumphost Virtual Machine. |
 <!-- END_TF_DOCS -->

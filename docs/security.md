@@ -52,6 +52,23 @@ To securely manage the private AKS cluster (which has no public API server), the
 - **No SSH Keys**: The Jumphost uses the **Azure AD SSH Login** extension (`AADSSHLoginForLinux`). Administrators authenticate with their Azure AD credentials (enforcing MFA and Conditional Access policies). Access is granted via the `Virtual Machine Administrator Login` RBAC role.
 - **Pre-configured Tooling**: The VM automatically installs `kubectl`, `kubelogin`, `helm`, and `azure-cli` via cloud-init.
 
+## Zero-Trust Governance (Brownfield Compliance)
+
+Because this platform is designed for highly regulated clients (e.g., healthcare, finance) and is often deployed in "Brownfield" environments where we do not control the entire Azure Subscription, the platform enforces compliance at the **Resource Group scope**.
+
+### 1. Resource Group Policies
+Instead of relying solely on external CI/CD scanners, we natively assign Azure Policy Initiatives directly to the platform's Resource Group.
+By default, the **Microsoft Cloud Security Benchmark** is enforced, but this is fully customizable per client (e.g., adding HIPAA HITRUST or PCI-DSS).
+
+### 2. Strict Technical Boundaries (Deny Policies)
+The governance module enforces "Deny" policies to block misconfigurations natively at the Azure API level.
+- **Data Sovereignty (Allowed Locations)**: The platform restricts deployments to explicitly authorized regions (e.g. `westeurope`), which is critical for highly regulated sectors (healthcare, finance) to guarantee data residency.
+- **No Public IPs**: The platform actively blocks the creation of any `Microsoft.Network/publicIPAddresses` inside the Resource Group, ensuring developers cannot accidentally expose services.
+- *Exceptions*: The only authorized entry points (Application Gateway and Azure Bastion) are explicitly exempted from this policy.
+
+### 3. Microsoft Defender for Cloud
+To maintain threat protection without requiring Subscription-level Owner permissions, we deploy Microsoft Defender for Containers natively via the AKS cluster (`microsoft_defender` profile).
+
 ## RBAC Model
 
 ### Kubernetes Authorization
