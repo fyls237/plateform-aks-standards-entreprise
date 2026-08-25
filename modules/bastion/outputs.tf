@@ -8,6 +8,11 @@ output "bastion_public_ip" {
   value       = azurerm_public_ip.bastion.ip_address
 }
 
+output "bastion_public_ip_id" {
+  description = "Resource ID of the Bastion Public IP."
+  value       = azurerm_public_ip.bastion.id
+}
+
 output "jumphost_vm_id" {
   description = "Resource ID of the Jumphost Virtual Machine."
   value       = azurerm_linux_virtual_machine.jump.id

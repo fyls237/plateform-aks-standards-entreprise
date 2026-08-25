@@ -118,6 +118,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
+  dynamic "microsoft_defender" {
+    for_each = var.log_analytics_workspace_id != null ? [1] : []
+
+    content {
+      log_analytics_workspace_id = var.log_analytics_workspace_id
+    }
+  }
+
   dynamic "monitor_metrics" {
     for_each = var.monitor_metrics_enabled ? [1] : []
 
