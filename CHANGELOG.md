@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.11.0...v0.12.0) (2026-09-03)
+
+
+### Features
+
+* **aks:** add GPU node pools support and AI infrastructure guide ([#54](https://github.com/fyls237/plateform-aks-standards-entreprise/issues/54)) ([040e32d](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/040e32d0ea5b616c55128c2abf6607d9e64aaf8a))
+
 ## [0.11.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.10.0...v0.11.0) (2026-08-25)
 
 
