@@ -453,6 +453,21 @@ module "aks" {
       node_labels          = { "workload-type" = "memory-intensive" }
       node_taints          = ["workload-type=memory-intensive:NoSchedule"]
     }
+    "gpu" = {
+      vm_size              = "Standard_NC4as_T4_v3"
+      min_count            = 0
+      max_count            = 2
+      auto_scaling_enabled = true
+      os_sku               = "Ubuntu"
+      zones                = ["1"]
+      node_labels = {
+        "workload-type" = "gpu"
+        "accelerator"   = "nvidia"
+      }
+      node_taints = [
+        "sku=gpu:NoSchedule"
+      ]
+    }
   }
 
   # Monitoring

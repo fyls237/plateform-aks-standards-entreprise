@@ -137,7 +137,8 @@ graph TB
 ### Kubernetes & Compute
 - ☸️ AKS with **Azure CNI Overlay** networking
 - 🔄 Cluster **autoscaler** with configurable min/max
-- 📦 Multiple **node pools** (system, workload, memory-optimized, spot)
+- 📦 Multiple **node pools** (system, workload, memory-optimized, GPU-accelerated, spot)
+- 🧠 **AI Infrastructure as a Service** with GPU node pools (`Standard_NC*`, `Standard_ND*`) and zero-trust Azure AI integration
 - 🐧 **AzureLinux** node OS (optimized for containers)
 - ⬆️ **Automatic upgrades** with configurable channels
 - 🧹 **Image cleaner** for unused container images
@@ -202,6 +203,7 @@ graph TB
 │
 ├── docs/                       # Technical documentation
 │   ├── architecture.md         # Platform architecture & diagrams
+│   ├── ai-infrastructure.md    # AI Infrastructure & GPU workloads guide
 │   ├── networking.md           # Networking deep dive
 │   ├── security.md             # Security model
 │   ├── deployment.md           # Deployment guide

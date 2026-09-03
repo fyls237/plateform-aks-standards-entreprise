@@ -267,7 +267,7 @@ variable "default_node_pool" {
 # ---- Additional Node Pools ----
 
 variable "node_pools" {
-  description = "Map of additional (user) node pools."
+  description = "Map of additional (user) node pools. Supports general workload pools, memory-optimized pools, and GPU-enabled pools (e.g., Standard_NC* or Standard_ND* families) with dedicated node_taints (e.g. sku=gpu:NoSchedule) and node_labels."
   type = map(object({
     vm_size              = optional(string, "Standard_D4s_v5")
     node_count           = optional(number, 1)
