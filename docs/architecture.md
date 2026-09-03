@@ -36,6 +36,7 @@ graph TB
                 NP_SYS["Node Pool: System"]
                 NP_WORK["Node Pool: Workload"]
                 NP_MEM["Node Pool: Memory"]
+                NP_GPU["Node Pool: GPU (AI/ML)"]
             end
 
             subgraph "Container Registry"
@@ -82,6 +83,7 @@ graph TB
     AKS --> NP_SYS
     AKS --> NP_WORK
     AKS --> NP_MEM
+    AKS --> NP_GPU
     AKS --> SNET_AKS
 
     ACR --> ACR_PE --> SNET_PE
@@ -165,9 +167,10 @@ Azure CNI Overlay is used for pod networking:
 - **Pod IPs** come from a separate overlay CIDR (`10.244.0.0/16` by default)
 - This avoids IP exhaustion in the VNet and simplifies subnet sizing
 
-## Security Model
+## Security & AI Infrastructure Models
 
-See [security.md](security.md) for the full security architecture.
+- See [security.md](security.md) for the full security architecture.
+- See [ai-infrastructure.md](ai-infrastructure.md) for AI Infrastructure as a Service, GPU-accelerated computing, and secure Azure AI services integration.
 
 ### Key Principles
 
