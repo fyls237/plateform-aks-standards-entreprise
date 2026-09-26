@@ -5,11 +5,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    paths:
-      - "modules/**"
-      - "environments/**"
-      - "examples/**"
-      - ".github/workflows/terraform-ci.yml"
 
 permissions:
   contents: read
@@ -84,6 +79,56 @@ jobs:
             echo "==> Linting $dir"
             tflint --chdir="$dir" --format=compact || true
           done
+
+  lock-consistency:
+    name: "Provider Lock Consistency"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - environments/dev
+          - environments/test
+          - environments/preprod
+          - environments/prod
+          - examples/simple
+          - examples/enterprise
+          - examples/private-cluster
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "~> 1.12.0"
+
+      - name: Verify .terraform.lock.hcl is committed
+        working-directory: ${{ matrix.directory }}
+        run: |
+          if [ ! -f ".terraform.lock.hcl" ]; then
+            echo "::error::.terraform.lock.hcl is missing in ${{ matrix.directory }}. Run 'make lock' and commit the result (see ADR-008)."
+            exit 1
+          fi
+
+      - name: Init with locked providers (fails on drift/staleness)
+        working-directory: ${{ matrix.directory }}
+        run: terraform init -backend=false -input=false -lockfile=readonly
+
+      - name: Check lock file covers all required platforms
+        working-directory: ${{ matrix.directory }}
+        run: |
+          terraform providers lock \
+            -platform=linux_amd64 \
+            -platform=darwin_amd64 \
+            -platform=darwin_arm64 \
+            -platform=windows_amd64
+
+          if [ -n "$(git status --porcelain .terraform.lock.hcl)" ]; then
+            echo "::error::.terraform.lock.hcl in ${{ matrix.directory }} was missing platform hashes. Run 'make lock' locally and commit the changes."
+            git diff .terraform.lock.hcl
+            exit 1
+          fi
 
   security:
     name: "Checkov Security Scan"

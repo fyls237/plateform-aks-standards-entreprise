@@ -48,6 +48,35 @@ docs:
 
 clean:
 	@echo "==> Cleaning Terraform caches..."
+	@echo "    (NOTE: .terraform.lock.hcl is intentionally preserved for"
+	@echo "     environments/* and examples/* — see ADR-008. Modules'"
+	@echo "     lock files are not versioned and can be removed safely.)"
 	find . -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.tfplan" -delete 2>/dev/null || true
-	find . -type f -name ".terraform.lock.hcl" -delete 2>/dev/null || true
+	find ./modules -type f -name ".terraform.lock.hcl" -delete 2>/dev/null || true
+
+lock:
+	@echo "==> Refreshing provider lock files for all root modules (all platforms)..."
+	@for dir in environments/*/ examples/*/; do \
+		echo "  -> $$dir"; \
+		terraform -chdir=$$dir providers lock \
+			-platform=linux_amd64 \
+			-platform=darwin_amd64 \
+			-platform=darwin_arm64 \
+			-platform=windows_amd64; \
+	done
+
+lock-check:
+	@echo "==> Verifying provider lock file consistency for all root modules..."
+	@status=0; \
+	for dir in environments/*/ examples/*/; do \
+		echo "  -> $$dir"; \
+		if [ ! -f "$$dir/.terraform.lock.hcl" ]; then \
+			echo "     ERROR: missing .terraform.lock.hcl in $$dir"; \
+			status=1; \
+			continue; \
+		fi; \
+		rm -rf $$dir/.terraform; \
+		terraform -chdir=$$dir init -backend=false -input=false -lockfile=readonly > /dev/null || status=1; \
+	done; \
+	exit $$status

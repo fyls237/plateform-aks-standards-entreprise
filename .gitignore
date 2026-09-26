@@ -12,7 +12,14 @@ override.tf.json
 .terraformrc
 terraform.rc
 terraform.tfvars
-**.terraform.lock.hcl
+
+# Provider dependency lock files (.terraform.lock.hcl):
+# - ROOT modules (environments/*, examples/*) MUST be committed for
+#   reproducible, drift-free deployments across clients (see ADR-008).
+# - Reusable child MODULES (modules/*) do not need a lock file: they are
+#   never `terraform init`'ed/applied on their own in this repo, and the
+#   lock is meaningless without a matching state. Ignore those only.
+modules/**/.terraform.lock.hcl
 
 # Sensitive variable files
 *.auto.tfvars
