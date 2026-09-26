@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "terraform": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"],
+    "commitMessageAction": "Refresh",
+    "commitMessageTopic": "Terraform provider lock files"
+  },
+  "packageRules": [
+    {
+      "description": "Group Azure provider patch/minor updates into a single, reviewable PR per environment refresh (controlled bump policy, ADR-008)",
+      "matchManagers": ["terraform"],
+      "matchDatasources": ["terraform-provider"],
+      "matchPackageNames": ["hashicorp/azurerm", "azurerm"],
+      "groupName": "azurerm provider",
+      "schedule": ["before 6am on monday"],
+      "labels": ["terraform", "dependencies", "provider-bump"],
+      "reviewersFromCodeOwners": true
+    },
+    {
+      "description": "Require manual approval for any azurerm major version bump",
+      "matchManagers": ["terraform"],
+      "matchDatasources": ["terraform-provider"],
+      "matchPackageNames": ["hashicorp/azurerm", "azurerm"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["terraform", "breaking-change", "needs-approval"]
+    }
+  ]
+}
