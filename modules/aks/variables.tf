@@ -294,6 +294,20 @@ variable "node_pools" {
     tags = optional(map(string), {})
   }))
   default = {}
+
+  validation {
+    # ADR-006 standardizes on os_sku = "AzureLinux" cluster-wide, with a documented
+    # exception for GPU node pools (Standard_NC*/Standard_ND* families), which must
+    # use os_sku = "Ubuntu" because NVIDIA CUDA/driver support on AzureLinux is not
+    # validated/supported. See docs/ai-infrastructure.md.
+    condition = alltrue([
+      for k, v in var.node_pools :
+      v.os_sku != "AzureLinux" || !(
+        can(regex("^(?i)standard_n[cd]", v.vm_size))
+      )
+    ])
+    error_message = "GPU node pools (vm_size starting with Standard_NC*/Standard_ND*) must not use os_sku = \"AzureLinux\": AzureLinux does not have validated CUDA/NVIDIA driver support. Set os_sku = \"Ubuntu\" for these pools (documented exception in ADR-006 / docs/ai-infrastructure.md)."
+  }
 }
 
 # ---- Monitoring ----

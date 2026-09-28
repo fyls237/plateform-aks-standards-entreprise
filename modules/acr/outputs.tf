@@ -19,5 +19,5 @@ output "acr_login_server" {
 
 output "private_endpoint_id" {
   description = "Resource ID of the private endpoint, if created."
-  value       = var.enable_private_endpoint ? azurerm_private_endpoint.private_endpoint[0].id : null
+  value       = module.private_endpoint.id
 }

@@ -19,10 +19,10 @@ output "key_vault_uri" {
 
 output "private_endpoint_id" {
   description = "Resource ID of the private endpoint, if created."
-  value       = var.enable_private_endpoint ? azurerm_private_endpoint.private_endpoint[0].id : null
+  value       = module.private_endpoint.id
 }
 
 output "private_endpoint_ip" {
   description = "Private IP address of the private endpoint, if created."
-  value       = var.enable_private_endpoint ? azurerm_private_endpoint.private_endpoint[0].private_service_connection[0].private_ip_address : null
+  value       = module.private_endpoint.private_ip_address
 }

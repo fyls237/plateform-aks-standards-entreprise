@@ -34,31 +34,18 @@ resource "azurerm_key_vault" "key_vault" {
 # Private Endpoint
 # ---------------------------------------------------------------------------
 
-resource "azurerm_private_endpoint" "private_endpoint" {
-  count = var.enable_private_endpoint ? 1 : 0
+module "private_endpoint" {
+  source = "../_private-endpoint"
 
-  name                = "${var.name}-pe"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = var.private_endpoint_subnet_id
-
-  private_service_connection {
-    name                           = "${var.name}-psc"
-    private_connection_resource_id = azurerm_key_vault.key_vault.id
-    is_manual_connection           = false
-    subresource_names              = ["vault"]
-  }
-
-  dynamic "private_dns_zone_group" {
-    for_each = var.private_dns_zone_id != null ? [1] : []
-
-    content {
-      name                 = "default"
-      private_dns_zone_ids = [var.private_dns_zone_id]
-    }
-  }
-
-  tags = var.tags
+  enabled                        = var.enable_private_endpoint
+  name                           = var.name
+  location                       = var.location
+  resource_group_name            = var.resource_group_name
+  subnet_id                      = var.private_endpoint_subnet_id
+  private_connection_resource_id = azurerm_key_vault.key_vault.id
+  subresource_names              = ["vault"]
+  private_dns_zone_ids           = var.private_dns_zone_id != null ? [var.private_dns_zone_id] : []
+  tags                           = var.tags
 }
 
 # ---------------------------------------------------------------------------
