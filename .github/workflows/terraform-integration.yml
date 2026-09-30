@@ -1,0 +1,76 @@
+name: "Terraform Azure Integration Tests"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Integration environment
+        required: true
+        default: integration
+        type: choice
+        options:
+          - integration
+
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-azure-integration
+  cancel-in-progress: false
+
+jobs:
+  integration:
+    name: "Apply and verify isolated test environment"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: azure-integration
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      TERRATEST_SUFFIX: ${{ github.run_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "~> 1.12.0"
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24.2"
+          cache-dependency-path: tests/integration/go.sum
+
+      - name: Validate integration Terraform configuration
+        working-directory: environments/test
+        run: terraform init -backend=false -input=false && terraform validate
+
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Download Go dependencies
+        working-directory: tests/integration
+        run: go mod download
+
+      - name: Run Terratest
+        working-directory: tests/integration
+        run: go test -v -timeout 110m ./...
+
+      - name: Emergency cleanup of the deterministic resource group
+        if: always()
+        run: |
+          az group delete \
+            --name "rg-aksit-r${{ github.run_id }}-weu" \
+            --yes \
+            --no-wait || true

@@ -28,8 +28,8 @@ output "cluster_identity" {
 output "kubelet_identity" {
   description = "Kubelet identity of the AKS cluster."
   value = {
-    client_id                 = azurerm_kubernetes_cluster.aks.kubelet_identity[0].client_id
-    object_id                 = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+    client_id                 = try(azurerm_kubernetes_cluster.aks.kubelet_identity[0].client_id, null)
+    object_id                 = try(azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id, null)
     user_assigned_identity_id = try(azurerm_kubernetes_cluster.aks.kubelet_identity[0].user_assigned_identity_id, null)
   }
 }
