@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.14.0...v0.15.0) (2026-09-30)
+
+
+### Features
+
+* **security:** add Trivy and TruffleHog scans to CI, update Checkov settings, and document security exceptions ([#82](https://github.com/fyls237/plateform-aks-standards-entreprise/issues/82)) ([37c3ce7](https://github.com/fyls237/plateform-aks-standards-entreprise/commit/37c3ce71395d4333000de6837278a529ccdace22))
+
 ## [0.14.0](https://github.com/fyls237/plateform-aks-standards-entreprise/compare/v0.13.1...v0.14.0) (2026-09-30)
 
 
