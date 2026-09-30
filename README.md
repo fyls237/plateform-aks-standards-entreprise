@@ -379,10 +379,12 @@ Examples:
 
 | Workflow | Trigger | Actions |
 |----------|---------|---------|
-| **terraform-ci** | PR to main | Format, Validate, Terraform Tests, TFLint, Checkov |
+| **terraform-ci** | PR to main and push to main | Format, Validate, Terraform Tests, TFLint, Checkov (HIGH/CRITICAL blocking), Trivy IaC (HIGH/CRITICAL blocking), TruffleHog (secret detection blocking) |
 | **terraform-plan** | PR to main | `terraform plan` per environment |
 | **terraform-apply** | Manual dispatch | `terraform apply` with environment selector |
 | **terraform-integration** | Manual dispatch | Terratest apply/verify/destroy in an isolated integration subscription |
+
+The security jobs are blocking CI gates: HIGH/CRITICAL Checkov and Trivy findings and any TruffleHog secret detection fail the workflow. LOW/MEDIUM Checkov findings remain non-blocking during the remediation grace period. See [the CI/CD security gate](docs/security.md#cicd-security-gate) and [documented security exceptions](docs/security-exceptions.md).
 
 ### Required Secrets
 
