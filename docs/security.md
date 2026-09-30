@@ -1,5 +1,14 @@
 # Security Architecture
 
+## CI/CD Security Gate
+
+The `terraform-ci` workflow runs on pull requests targeting `main` and on pushes to `main`:
+
+- Checkov blocks HIGH and CRITICAL Terraform findings. LOW and MEDIUM findings are temporarily non-blocking during remediation.
+- Trivy config blocks HIGH and CRITICAL IaC findings.
+- TruffleHog scans the commits introduced by each pull request or push and fails the workflow when it detects a verified, unverified, or unknown credential.
+- Existing Checkov suppressions are tracked in [security-exceptions.md](security-exceptions.md), with compensating controls and review dates.
+
 ## Identity Model
 
 ### Cluster Identity (Control Plane)
