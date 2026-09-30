@@ -1,4 +1,4 @@
-.PHONY: fmt validate lint plan init docs clean
+.PHONY: fmt validate test lint plan init docs clean
 
 ENVIRONMENT ?= dev
 
@@ -17,6 +17,14 @@ validate:
 		echo "  -> $$dir"; \
 		terraform -chdir=$$dir init -backend=false -input=false > /dev/null 2>&1; \
 		terraform -chdir=$$dir validate; \
+	done
+
+test:
+	@echo "==> Running Terraform tests with mocked AzureRM providers..."
+	@for dir in tests/unit/aks/ tests/unit/governance/ tests/unit/networking/; do \
+		echo "  -> $$dir"; \
+		terraform -chdir=$$dir init -backend=false -input=false > /dev/null; \
+		terraform -chdir=$$dir test; \
 	done
 
 lint:

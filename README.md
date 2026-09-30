@@ -206,6 +206,7 @@ graph TB
 │   ├── ai-infrastructure.md    # AI Infrastructure & GPU workloads guide
 │   ├── networking.md           # Networking deep dive
 │   ├── security.md             # Security model
+│   ├── testing.md              # Terraform functional testing strategy
 │   ├── deployment.md           # Deployment guide
 │   ├── decisions.md            # Architecture Decision Records
 │   └── roadmap.md              # Future improvements
@@ -378,9 +379,10 @@ Examples:
 
 | Workflow | Trigger | Actions |
 |----------|---------|---------|
-| **terraform-ci** | PR to main | Format, Validate, TFLint, Checkov |
+| **terraform-ci** | PR to main | Format, Validate, Terraform Tests, TFLint, Checkov |
 | **terraform-plan** | PR to main | `terraform plan` per environment |
 | **terraform-apply** | Manual dispatch | `terraform apply` with environment selector |
+| **terraform-integration** | Manual dispatch | Terratest apply/verify/destroy in an isolated integration subscription |
 
 ### Required Secrets
 
