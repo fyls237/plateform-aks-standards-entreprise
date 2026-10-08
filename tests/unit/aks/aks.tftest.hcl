@@ -105,6 +105,9 @@ run "configures_preprod_agic_integration" {
     private_dns_zone_id     = "/subscriptions/test/resourceGroups/rg-test/providers/Microsoft.Network/privateDnsZones/privatelink.westeurope.azmk8s.io"
     ingress_type            = "agic"
     appgw_id                = "/subscriptions/test/resourceGroups/rg-test/providers/Microsoft.Network/applicationGateways/agw-test"
+    node_pools = {
+      workload = {}
+    }
   }
 
   assert {

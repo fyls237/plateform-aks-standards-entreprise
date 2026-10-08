@@ -37,6 +37,12 @@ variable "kubernetes_version" {
   default     = null
 }
 
+variable "disk_encryption_set_id" {
+  description = "Resource ID of the customer-managed Disk Encryption Set for AKS nodes and volumes."
+  type        = string
+  default     = null
+}
+
 variable "automatic_upgrade_channel" {
   description = "Automatic upgrade channel. Options: none, patch, rapid, stable, node-image."
   type        = string
@@ -248,7 +254,7 @@ variable "default_node_pool" {
     auto_scaling_enabled         = optional(bool, true)
     max_pods                     = optional(number, 110)
     os_disk_size_gb              = optional(number, 128)
-    os_disk_type                 = optional(string, "Managed")
+    os_disk_type                 = optional(string, "Ephemeral")
     os_sku                       = optional(string, "AzureLinux")
     zones                        = optional(list(string), ["1", "2", "3"])
     only_critical_addons_enabled = optional(bool, true)
@@ -276,7 +282,7 @@ variable "node_pools" {
     auto_scaling_enabled = optional(bool, true)
     max_pods             = optional(number, 110)
     os_disk_size_gb      = optional(number, 128)
-    os_disk_type         = optional(string, "Managed")
+    os_disk_type         = optional(string, "Ephemeral")
     os_sku               = optional(string, "AzureLinux")
     zones                = optional(list(string), ["1", "2", "3"])
     mode                 = optional(string, "User")

@@ -26,6 +26,16 @@ variable "admin_group_object_ids" {
   default     = []
 }
 
+variable "dns_servers" {
+  description = "Enterprise DNS resolver IPs used by the preprod VNet."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.dns_servers) > 0
+    error_message = "Preprod requires at least one enterprise DNS server."
+  }
+}
+
 variable "compliance_initiative_ids" {
   description = "List of built-in Azure Policy Initiative IDs to assign to the Resource Group. Can be customized per client."
   type        = list(string)

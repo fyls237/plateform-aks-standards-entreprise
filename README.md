@@ -185,6 +185,7 @@ graph TB
 │   ├── networking/             # VNet, Subnets, NSGs, Route Tables
 │   ├── acr/                    # Azure Container Registry
 │   ├── keyvault/               # Azure Key Vault
+├── disk-encryption-set/    # Customer-managed AKS disk encryption
 │   ├── monitor/                # Diagnostic settings & alerts
 │   ├── identities/             # Managed identities & RBAC
 │   ├── log-analytics/          # Log Analytics workspace
@@ -358,9 +359,15 @@ terraform init && terraform apply
 | `project` | Project name for naming convention | `aksplatform` |
 | `environment` | Environment name | `dev` |
 | `admin_group_object_ids` | Azure AD groups for cluster admin | `[]` |
+| `api_server_authorized_ip_ranges` | Corporate VPN/administration CIDRs for public AKS API access in dev/test | Required for public clusters |
+| `dns_servers` | Environment DNS resolvers; required in preprod/prod, optional in dev/test | `[]` in dev/test |
 | `alert_email_receivers` | Email addresses for alerts | `[]` |
 
 See each environment's `variables.tf` for the full variable reference.
+
+Dev and test intentionally use public AKS API endpoints, but require explicit
+administration CIDRs. Preprod and prod use private AKS clusters, enterprise DNS
+resolvers, and a customer-managed Disk Encryption Set backed by a Key Vault key.
 
 ### Naming Convention
 

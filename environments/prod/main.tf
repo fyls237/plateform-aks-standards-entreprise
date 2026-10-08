@@ -6,7 +6,7 @@
 
 data "azurerm_client_config" "current" {}
 
-resource "azurerm_resource_group" "this" {
+resource "azurerm_resource_group" "rg" {
   name     = local.resource_group_name
   location = local.location
   tags     = local.default_tags
@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "this" {
 # Resource lock — prevent accidental deletion of the resource group
 resource "azurerm_management_lock" "rg" {
   name       = "rg-lock"
-  scope      = azurerm_resource_group.this.id
+  scope      = azurerm_resource_group.rg.id
   lock_level = "CanNotDelete"
   notes      = "Production resource group — protected from accidental deletion."
 }
@@ -27,11 +27,12 @@ resource "azurerm_management_lock" "rg" {
 module "networking" {
   source = "../../modules/networking"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   vnet_name          = local.vnet_name
   vnet_address_space = ["10.103.0.0/16"]
+  dns_servers        = var.dns_servers
 
   subnets = {
     "snet-aks-nodes" = {
@@ -247,7 +248,7 @@ module "networking" {
 module "private_dns" {
   source = "../../modules/private-dns"
 
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = azurerm_resource_group.rg.name
 
   dns_zones = {
     "privatelink.azurecr.io" = {
@@ -281,8 +282,8 @@ module "log_analytics" {
   source = "../../modules/log-analytics"
 
   name                = local.log_analytics_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   retention_in_days   = 90
 
   tags = local.default_tags
@@ -295,8 +296,8 @@ module "log_analytics" {
 module "identities" {
   source = "../../modules/identities"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   managed_identities = {
     "id-aks-${local.name_prefix}"     = {}
@@ -342,11 +343,12 @@ module "identities" {
 module "keyvault" {
   source = "../../modules/keyvault"
 
-  name                = local.keyvault_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  sku_name            = "premium"
+  name                        = local.keyvault_name
+  resource_group_name         = azurerm_resource_group.rg.name
+  location                    = azurerm_resource_group.rg.location
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "premium"
+  enabled_for_disk_encryption = true
 
   # Hardened network config
   network_acls = {
@@ -364,6 +366,17 @@ module "keyvault" {
   tags = local.default_tags
 }
 
+module "disk_encryption_set" {
+  source = "../../modules/disk-encryption-set"
+
+  name                = "des-${local.name_prefix}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  key_vault_id        = module.keyvault.key_vault_id
+  key_name            = "key-aks-disk-${local.name_prefix}"
+  key_expiration_date = "2028-12-31T00:00:00Z"
+}
+
 # ---------------------------------------------------------------------------
 # Container Registry
 # ---------------------------------------------------------------------------
@@ -372,8 +385,8 @@ module "acr" {
   source = "../../modules/acr"
 
   name                          = local.acr_name
-  resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
+  resource_group_name           = azurerm_resource_group.rg.name
+  location                      = azurerm_resource_group.rg.location
   sku                           = "Premium"
   public_network_access_enabled = false
   zone_redundancy_enabled       = true
@@ -397,15 +410,16 @@ module "aks" {
   source = "../../modules/aks"
 
   cluster_name        = local.aks_cluster_name
-  resource_group_name = azurerm_resource_group.this.name
-  resource_group_id   = azurerm_resource_group.this.id
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_id   = azurerm_resource_group.rg.id
+  location            = azurerm_resource_group.rg.location
 
   # Networking
   vnet_subnet_id                      = module.networking.subnet_ids["snet-aks-nodes"]
   private_cluster_enabled             = true
   private_dns_zone_id                 = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
   private_cluster_public_fqdn_enabled = false
+  disk_encryption_set_id              = module.disk_encryption_set.id
 
   ingress_type = "nginx"
 
@@ -501,8 +515,8 @@ module "appgw" {
   source = "../../modules/appgw"
 
   name                       = "agw-${local.name_prefix}"
-  resource_group_name        = azurerm_resource_group.this.name
-  location                   = azurerm_resource_group.this.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
   subnet_id                  = module.networking.subnet_ids["snet-appgw"]
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
@@ -525,8 +539,8 @@ module "bastion" {
   source = "../../modules/bastion"
 
   name_prefix         = local.name_prefix
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   bastion_subnet_id  = module.networking.subnet_ids["AzureBastionSubnet"]
   jumphost_subnet_id = module.networking.subnet_ids["snet-jumphost"]
@@ -551,7 +565,7 @@ module "governance" {
   source = "../../modules/governance"
 
   name_prefix               = local.name_prefix
-  resource_group_id         = azurerm_resource_group.this.id
+  resource_group_id         = azurerm_resource_group.rg.id
   compliance_initiative_ids = var.compliance_initiative_ids
 
   # Strictly deny Public IPs, but exempt the Authorized edge entry points
@@ -574,8 +588,8 @@ module "governance" {
 module "monitor" {
   source = "../../modules/monitor"
 
-  resource_group_name        = azurerm_resource_group.this.name
-  location                   = azurerm_resource_group.this.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
   log_analytics_workspace_id = module.log_analytics.workspace_id
   aks_cluster_id             = module.aks.cluster_id
 

@@ -1,0 +1,2 @@
+# Replace with the enterprise DNS resolver IPs reachable from the VNet.
+dns_servers = ["10.0.0.4", "10.0.0.5"]

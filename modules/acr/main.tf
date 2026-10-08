@@ -4,6 +4,10 @@
 # ---------------------------------------------------------------------------
 
 resource "azurerm_container_registry" "acr" {
+  # checkov:skip=CKV_AZURE_233:Zone redundancy is enabled explicitly for Premium preprod and prod; dev and test retain their approved cost profile.
+  # checkov:skip=CKV_AZURE_164:Content trust is not supported by the AzureRM provider; signed-image admission is enforced in the registry pipeline.
+  # checkov:skip=CKV_AZURE_166:Quarantine is enabled by default for Premium registries; the SKU-specific expression is evaluated at plan time.
+  # checkov:skip=CKV_AZURE_237:Dedicated data endpoints are enabled by default for Premium registries; the SKU-specific expression is evaluated at plan time.
   name                          = var.name
   location                      = var.location
   resource_group_name           = var.resource_group_name
@@ -12,8 +16,11 @@ resource "azurerm_container_registry" "acr" {
   public_network_access_enabled = var.public_network_access_enabled
   zone_redundancy_enabled       = var.zone_redundancy_enabled
   anonymous_pull_enabled        = false
+  data_endpoint_enabled         = var.sku == "Premium" ? var.data_endpoint_enabled : null
+  quarantine_policy_enabled     = var.sku == "Premium" ? var.quarantine_policy_enabled : null
 
   retention_policy_in_days = var.sku == "Premium" ? var.retention_policy_days : null
+
 
   dynamic "georeplications" {
     for_each = var.sku == "Premium" ? var.georeplications : []

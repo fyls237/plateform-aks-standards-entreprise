@@ -36,6 +36,11 @@ variable "project" {
   default     = "aksquick"
 }
 
+variable "api_server_authorized_ip_ranges" {
+  description = "CIDRs allowed to access the public AKS API."
+  type        = list(string)
+}
+
 # ---------------------------------------------------------------------------
 # Locals
 # ---------------------------------------------------------------------------
@@ -54,7 +59,7 @@ locals {
 # Resource Group
 # ---------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "this" {
+resource "azurerm_resource_group" "rg" {
   name     = "rg-${local.name_prefix}"
   location = var.location
   tags     = local.tags
@@ -67,8 +72,8 @@ resource "azurerm_resource_group" "this" {
 module "networking" {
   source = "../../modules/networking"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   vnet_name          = "vnet-${local.name_prefix}"
   vnet_address_space = ["10.200.0.0/16"]
@@ -90,8 +95,8 @@ module "log_analytics" {
   source = "../../modules/log-analytics"
 
   name                = "log-${local.name_prefix}"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   retention_in_days   = 30
 
   tags = local.tags
@@ -104,8 +109,8 @@ module "log_analytics" {
 module "identities" {
   source = "../../modules/identities"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   managed_identities = {
     "id-aks-${local.name_prefix}" = {}
@@ -130,13 +135,14 @@ module "aks" {
   source = "../../modules/aks"
 
   cluster_name        = "aks-${local.name_prefix}"
-  resource_group_name = azurerm_resource_group.this.name
-  resource_group_id   = azurerm_resource_group.this.id
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_id   = azurerm_resource_group.rg.id
+  location            = azurerm_resource_group.rg.location
 
-  vnet_subnet_id            = module.networking.subnet_ids["snet-aks"]
-  identity_type             = "UserAssigned"
-  user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
+  vnet_subnet_id                  = module.networking.subnet_ids["snet-aks"]
+  identity_type                   = "UserAssigned"
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  user_assigned_identity_id       = module.identities.identity_ids["id-aks-${local.name_prefix}"]
 
   default_node_pool = {
     vm_size              = "Standard_D2s_v5"
@@ -161,8 +167,8 @@ module "acr" {
   source = "../../modules/acr"
 
   name                = replace("acr${var.project}simple", "-", "")
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
 
   tags = local.tags
@@ -187,5 +193,5 @@ output "acr_login_server" {
 }
 
 output "get_credentials_command" {
-  value = "az aks get-credentials --resource-group ${azurerm_resource_group.this.name} --name ${module.aks.cluster_name}"
+  value = "az aks get-credentials --resource-group ${azurerm_resource_group.rg.name} --name ${module.aks.cluster_name}"
 }

@@ -8,6 +8,8 @@
 # environment            = "dev"
 # project                = "aksplatform"
 # admin_group_object_ids = ["00000000-0000-0000-0000-000000000000"]
+# api_server_authorized_ip_ranges = ["203.0.113.10/32"] # Replace with corporate VPN/admin CIDRs
+# dns_servers = [] # Azure-provided DNS is approved for dev
 
 # alert_email_receivers = [
 #   {
