@@ -23,17 +23,6 @@ variable "key_name" {
   type        = string
 }
 
-variable "key_type" {
-  description = "Key type for the customer-managed encryption key."
-  type        = string
-  default     = "RSA"
-
-  validation {
-    condition     = contains(["RSA", "RSA-HSM"], var.key_type)
-    error_message = "key_type must be RSA or RSA-HSM."
-  }
-}
-
 variable "key_size" {
   description = "RSA key size in bits."
   type        = number
@@ -67,4 +56,9 @@ variable "key_notification_before_expiry" {
   description = "Notification period before key expiry."
   type        = string
   default     = "P30D"
+}
+
+variable "key_expiration_date" {
+  description = "RFC3339 expiration date for the current Key Vault key version."
+  type        = string
 }

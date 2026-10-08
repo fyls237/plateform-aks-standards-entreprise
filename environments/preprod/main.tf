@@ -310,6 +310,7 @@ module "disk_encryption_set" {
   location            = azurerm_resource_group.rg.location
   key_vault_id        = module.keyvault.key_vault_id
   key_name            = "key-aks-disk-${local.name_prefix}"
+  key_expiration_date = "2028-12-31T00:00:00Z"
 }
 
 module "acr" {

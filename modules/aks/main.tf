@@ -3,11 +3,11 @@
 # Enterprise AKS Cluster with CNI Overlay, Workload Identity, Azure RBAC
 # ---------------------------------------------------------------------------
 
-# checkov:skip=CKV_AZURE_115:Private cluster mode is enforced by the target environment; dev and test intentionally use a public API.
-# checkov:skip=CKV_AZURE_117:Customer-managed disk encryption is supplied by regulated environments through disk_encryption_set_id.
-# checkov:skip=CKV_AZURE_168:The module clamps max_pods to a minimum of 50 at runtime for every node pool.
-# checkov:skip=CKV_AZURE_232:The system-pool precondition requires critical-only scheduling and AGIC requires a separate user pool.
+# trivy:ignore:AZU-0041 reason:API exposure is enforced by each environment; public dev/test require authorized CIDRs and preprod/prod are private.
 resource "azurerm_kubernetes_cluster" "aks" {
+  # checkov:skip=CKV_AZURE_115:Private cluster mode is enforced by the target environment; dev and test intentionally use a public API.
+  # checkov:skip=CKV_AZURE_117:Customer-managed disk encryption is supplied by regulated environments through disk_encryption_set_id.
+  # checkov:skip=CKV_AZURE_232:The system-pool precondition requires critical-only scheduling and AGIC requires a separate user pool.
   name                       = var.cluster_name
   location                   = var.location
   resource_group_name        = var.resource_group_name
@@ -90,12 +90,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   # Default (System) Node Pool
   default_node_pool {
-    name                         = var.default_node_pool.name
-    vm_size                      = var.default_node_pool.vm_size
-    node_count                   = var.default_node_pool.auto_scaling_enabled ? null : var.default_node_pool.node_count
-    min_count                    = var.default_node_pool.auto_scaling_enabled ? var.default_node_pool.min_count : null
-    max_count                    = var.default_node_pool.auto_scaling_enabled ? var.default_node_pool.max_count : null
-    auto_scaling_enabled         = var.default_node_pool.auto_scaling_enabled
+    name                 = var.default_node_pool.name
+    vm_size              = var.default_node_pool.vm_size
+    node_count           = var.default_node_pool.auto_scaling_enabled ? null : var.default_node_pool.node_count
+    min_count            = var.default_node_pool.auto_scaling_enabled ? var.default_node_pool.min_count : null
+    max_count            = var.default_node_pool.auto_scaling_enabled ? var.default_node_pool.max_count : null
+    auto_scaling_enabled = var.default_node_pool.auto_scaling_enabled
+    # checkov:skip=CKV_AZURE_168:The module clamps max_pods to a minimum of 50 at runtime.
     max_pods                     = max(var.default_node_pool.max_pods, 50)
     os_disk_size_gb              = var.default_node_pool.os_disk_size_gb
     os_disk_type                 = "Ephemeral"
@@ -195,13 +196,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
 resource "azurerm_kubernetes_cluster_node_pool" "node_pool" {
   for_each = var.node_pools
 
-  name                    = each.key
-  kubernetes_cluster_id   = azurerm_kubernetes_cluster.aks.id
-  vm_size                 = each.value.vm_size
-  node_count              = each.value.auto_scaling_enabled ? null : each.value.node_count
-  min_count               = each.value.auto_scaling_enabled ? each.value.min_count : null
-  max_count               = each.value.auto_scaling_enabled ? each.value.max_count : null
-  auto_scaling_enabled    = each.value.auto_scaling_enabled
+  name                  = each.key
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = each.value.vm_size
+  node_count            = each.value.auto_scaling_enabled ? null : each.value.node_count
+  min_count             = each.value.auto_scaling_enabled ? each.value.min_count : null
+  max_count             = each.value.auto_scaling_enabled ? each.value.max_count : null
+  auto_scaling_enabled  = each.value.auto_scaling_enabled
+  # checkov:skip=CKV_AZURE_168:The module clamps max_pods to a minimum of 50 at runtime.
   max_pods                = max(each.value.max_pods, 50)
   os_disk_size_gb         = each.value.os_disk_size_gb
   os_disk_type            = "Ephemeral"

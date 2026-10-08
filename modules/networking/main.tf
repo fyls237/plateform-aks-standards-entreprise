@@ -3,8 +3,8 @@
 # Provisions VNet, Subnets, NSGs, Route Tables, and Diagnostic Settings
 # ---------------------------------------------------------------------------
 
-# checkov:skip=CKV_AZURE_183:DNS is an environment policy; regulated environments provide enterprise resolvers while dev and test may use Azure DNS.
 resource "azurerm_virtual_network" "vnet" {
+  # checkov:skip=CKV_AZURE_183:DNS is an environment policy; regulated environments provide enterprise resolvers while dev and test may use Azure DNS.
   name                = var.vnet_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -57,6 +57,7 @@ resource "azurerm_subnet" "subnet" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_network_security_group" "nsg" {
+  # trivy:ignore:AZU-0047 reason:NSG rules are supplied by each environment; dev/test have approved public test ingress while preprod/prod use restricted rules.
   for_each = var.network_security_groups
 
   name                = each.key

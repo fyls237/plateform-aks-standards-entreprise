@@ -16,5 +16,8 @@ This register documents the active Checkov suppressions in Terraform. Exceptions
 | `modules/acr` - `CKV_AZURE_233` | Zone redundancy is not required for the approved dev/test cost profile. | Premium preprod/prod environments explicitly enable zone redundancy. | 2026-12-31 |
 | `modules/acr` - `CKV_AZURE_166` | Checkov cannot evaluate the Premium-only quarantine expression in the reusable module. | Premium registries default quarantine policy to enabled. | 2026-12-31 |
 | `modules/acr` - `CKV_AZURE_237` | Checkov cannot evaluate the Premium-only dedicated endpoint expression in the reusable module. | Premium registries default dedicated data endpoints to enabled. | 2026-12-31 |
+| `modules/aks` - `AZU-0041` | Trivy scans the reusable AKS resource without resolving environment inputs, so it cannot distinguish public dev/test from private preprod/prod. | Public environments require non-empty authorized API CIDRs; preprod/prod use private clusters. | 2026-12-31 |
+| `modules/keyvault` - `AZU-0013` | Trivy scans the generic network ACL variable without resolving its environment value. | Dev has an explicit documented exception; test/preprod/prod use `Deny`. | 2026-12-31 |
+| `modules/networking` - `AZU-0047` | Trivy scans dynamic NSG rules without resolving the environment-specific rule set. | Public test ingress is limited to dev/test; production-like environments use restricted or service-tagged rules. | 2026-12-31 |
 
 These suppressions bypass Checkov for the annotated controls. They do not suppress Trivy findings. New exceptions require a documented rationale, compensating controls, and an explicit review date; HIGH/CRITICAL findings must not be made non-blocking through workflow-wide settings.
