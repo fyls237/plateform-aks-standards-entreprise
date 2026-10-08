@@ -4,7 +4,6 @@
 # ---------------------------------------------------------------------------
 
 resource "azurerm_key_vault" "key_vault" {
-  #trivy:ignore:AVD-AZU-0013 reason:Network ACL mode is selected by environment; dev intentionally allows Azure services while regulated environments use Deny.
   name                = var.name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -18,7 +17,8 @@ resource "azurerm_key_vault" "key_vault" {
   public_network_access_enabled = var.public_network_access_enabled
 
   network_acls {
-    bypass                     = var.network_acls.bypass
+    bypass = var.network_acls.bypass
+    #trivy:ignore:AVD-AZU-0013 reason:Network ACL mode is selected by environment; dev intentionally allows Azure services while regulated environments use Deny.
     default_action             = var.network_acls.default_action
     ip_rules                   = var.network_acls.ip_rules
     virtual_network_subnet_ids = var.network_acls.virtual_network_subnet_ids

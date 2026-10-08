@@ -58,7 +58,6 @@ resource "azurerm_subnet" "subnet" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_network_security_group" "nsg" {
-  #trivy:ignore:AVD-AZU-0047 reason:NSG rules are supplied by each environment; dev/test have approved public test ingress while preprod/prod use restricted rules.
   for_each = var.network_security_groups
 
   name                = each.key
@@ -69,14 +68,15 @@ resource "azurerm_network_security_group" "nsg" {
     for_each = each.value.rules
 
     content {
-      name                       = security_rule.value.name
-      priority                   = security_rule.value.priority
-      direction                  = security_rule.value.direction
-      access                     = security_rule.value.access
-      protocol                   = security_rule.value.protocol
-      source_port_range          = security_rule.value.source_port_range
-      destination_port_range     = security_rule.value.destination_port_range
-      destination_port_ranges    = security_rule.value.destination_port_ranges
+      name                    = security_rule.value.name
+      priority                = security_rule.value.priority
+      direction               = security_rule.value.direction
+      access                  = security_rule.value.access
+      protocol                = security_rule.value.protocol
+      source_port_range       = security_rule.value.source_port_range
+      destination_port_range  = security_rule.value.destination_port_range
+      destination_port_ranges = security_rule.value.destination_port_ranges
+      #trivy:ignore:AVD-AZU-0047 reason:NSG rules are supplied by each environment; dev/test have approved public test ingress while preprod/prod use restricted rules.
       source_address_prefix      = security_rule.value.source_address_prefix
       source_address_prefixes    = security_rule.value.source_address_prefixes
       destination_address_prefix = security_rule.value.destination_address_prefix
