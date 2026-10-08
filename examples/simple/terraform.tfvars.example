@@ -1,0 +1,2 @@
+# Replace with the public egress CIDRs used by the corporate VPN or admin network.
+api_server_authorized_ip_ranges = ["203.0.113.10/32"]

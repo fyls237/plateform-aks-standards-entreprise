@@ -23,6 +23,7 @@ module "networking" {
 
   vnet_name          = local.vnet_name
   vnet_address_space = ["10.100.0.0/16"]
+  dns_servers        = var.dns_servers
 
   subnets = {
     "snet-aks-nodes" = {
@@ -169,7 +170,8 @@ module "aks" {
   vnet_subnet_id = module.networking.subnet_ids["snet-aks-nodes"]
 
   # Private Cluster — disabled in dev
-  private_cluster_enabled = false
+  private_cluster_enabled         = false
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
   # Identity
   identity_type             = "UserAssigned"

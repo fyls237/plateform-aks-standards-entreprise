@@ -26,6 +26,17 @@ variable "admin_group_object_ids" {
   default     = []
 }
 
+variable "api_server_authorized_ip_ranges" {
+  description = "Corporate VPN and administration egress CIDRs allowed to access the public AKS API."
+  type        = list(string)
+}
+
+variable "dns_servers" {
+  description = "Custom DNS servers for the VNet. Leave empty to use Azure-provided DNS in test."
+  type        = list(string)
+  default     = []
+}
+
 variable "alert_email_receivers" {
   description = "Email receivers for monitoring alerts."
   type = list(object({

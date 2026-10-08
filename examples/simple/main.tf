@@ -36,6 +36,11 @@ variable "project" {
   default     = "aksquick"
 }
 
+variable "api_server_authorized_ip_ranges" {
+  description = "CIDRs allowed to access the public AKS API."
+  type        = list(string)
+}
+
 # ---------------------------------------------------------------------------
 # Locals
 # ---------------------------------------------------------------------------
@@ -134,9 +139,10 @@ module "aks" {
   resource_group_id   = azurerm_resource_group.this.id
   location            = azurerm_resource_group.this.location
 
-  vnet_subnet_id            = module.networking.subnet_ids["snet-aks"]
-  identity_type             = "UserAssigned"
-  user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]
+  vnet_subnet_id                  = module.networking.subnet_ids["snet-aks"]
+  identity_type                   = "UserAssigned"
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  user_assigned_identity_id       = module.identities.identity_ids["id-aks-${local.name_prefix}"]
 
   default_node_pool = {
     vm_size              = "Standard_D2s_v5"

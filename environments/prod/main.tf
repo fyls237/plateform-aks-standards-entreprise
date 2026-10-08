@@ -32,6 +32,7 @@ module "networking" {
 
   vnet_name          = local.vnet_name
   vnet_address_space = ["10.103.0.0/16"]
+  dns_servers        = var.dns_servers
 
   subnets = {
     "snet-aks-nodes" = {
@@ -342,11 +343,12 @@ module "identities" {
 module "keyvault" {
   source = "../../modules/keyvault"
 
-  name                = local.keyvault_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  sku_name            = "premium"
+  name                        = local.keyvault_name
+  resource_group_name         = azurerm_resource_group.this.name
+  location                    = azurerm_resource_group.this.location
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "premium"
+  enabled_for_disk_encryption = true
 
   # Hardened network config
   network_acls = {
@@ -362,6 +364,16 @@ module "keyvault" {
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
   tags = local.default_tags
+}
+
+module "disk_encryption_set" {
+  source = "../../modules/disk-encryption-set"
+
+  name                = "des-${local.name_prefix}"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  key_vault_id        = module.keyvault.key_vault_id
+  key_name            = "key-aks-disk-${local.name_prefix}"
 }
 
 # ---------------------------------------------------------------------------
@@ -406,6 +418,7 @@ module "aks" {
   private_cluster_enabled             = true
   private_dns_zone_id                 = module.private_dns.zone_ids["privatelink.${local.location}.azmk8s.io"]
   private_cluster_public_fqdn_enabled = false
+  disk_encryption_set_id              = module.disk_encryption_set.id
 
   ingress_type = "nginx"
 

@@ -23,6 +23,7 @@ module "networking" {
 
   vnet_name          = local.vnet_name
   vnet_address_space = ["10.101.0.0/16"]
+  dns_servers        = var.dns_servers
 
   subnets = {
     "snet-aks-nodes" = {
@@ -142,8 +143,9 @@ module "aks" {
   resource_group_id   = azurerm_resource_group.this.id
   location            = azurerm_resource_group.this.location
 
-  vnet_subnet_id          = module.networking.subnet_ids["snet-aks-nodes"]
-  private_cluster_enabled = false
+  vnet_subnet_id                  = module.networking.subnet_ids["snet-aks-nodes"]
+  private_cluster_enabled         = false
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
   identity_type             = "UserAssigned"
   user_assigned_identity_id = module.identities.identity_ids["id-aks-${local.name_prefix}"]

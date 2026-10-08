@@ -51,6 +51,18 @@ variable "zone_redundancy_enabled" {
   default     = false
 }
 
+variable "data_endpoint_enabled" {
+  description = "Enable dedicated data endpoints. Requires Premium SKU."
+  type        = bool
+  default     = true
+}
+
+variable "quarantine_policy_enabled" {
+  description = "Quarantine images until they are verified. Requires Premium SKU."
+  type        = bool
+  default     = true
+}
+
 variable "retention_policy_days" {
   description = "Number of days to retain untagged manifests. Set to 0 to disable. Requires Premium SKU."
   type        = number

@@ -178,6 +178,44 @@ jobs:
           soft_fail_on: LOW,MEDIUM
           quiet: true
 
+      - name: Run Checkov for dev policy
+        uses: bridgecrewio/checkov-action@v12.3126.0
+        with:
+          directory: environments/dev
+          framework: terraform
+          output_format: cli
+          soft_fail: false
+          skip_check: CKV_AZURE_115,CKV_AZURE_183
+          quiet: true
+
+      - name: Run Checkov for test policy
+        uses: bridgecrewio/checkov-action@v12.3126.0
+        with:
+          directory: environments/test
+          framework: terraform
+          output_format: cli
+          soft_fail: false
+          skip_check: CKV_AZURE_115,CKV_AZURE_183
+          quiet: true
+
+      - name: Run Checkov for preprod policy
+        uses: bridgecrewio/checkov-action@v12.3126.0
+        with:
+          directory: environments/preprod
+          framework: terraform
+          output_format: cli
+          soft_fail: false
+          quiet: true
+
+      - name: Run Checkov for prod policy
+        uses: bridgecrewio/checkov-action@v12.3126.0
+        with:
+          directory: environments/prod
+          framework: terraform
+          output_format: cli
+          soft_fail: false
+          quiet: true
+
       - name: Upload SARIF results to Code Scanning
         if: always()
         uses: github/codeql-action/upload-sarif@v4.38.2

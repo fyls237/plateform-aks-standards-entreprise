@@ -30,8 +30,10 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Enable admin user. Should be disabled in production; use managed identities instead. | `bool` | `false` | no |
+| <a name="input_data_endpoint_enabled"></a> [data\_endpoint\_enabled](#input\_data\_endpoint\_enabled) | Enable dedicated data endpoints. Requires Premium SKU. | `bool` | `true` | no |
 | <a name="input_enable_diagnostics"></a> [enable\_diagnostics](#input\_enable\_diagnostics) | Enable diagnostic settings for the Container Registry. | `bool` | `false` | no |
 | <a name="input_enable_private_endpoint"></a> [enable\_private\_endpoint](#input\_enable\_private\_endpoint) | Create a private endpoint for the Container Registry. Requires Premium SKU. | `bool` | `false` | no |
+| <a name="input_quarantine_policy_enabled"></a> [quarantine\_policy\_enabled](#input\_quarantine\_policy\_enabled) | Quarantine images until they are verified. Requires Premium SKU. | `bool` | `true` | no |
 | <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | List of regions for geo-replication. Requires Premium SKU. | <pre>list(object({<br/>    location                = string<br/>    zone_redundancy_enabled = optional(bool, false)<br/>  }))</pre> | `[]` | no |
 | <a name="input_location"></a> [location](#input\_location) | Azure region for the Container Registry. | `string` | n/a | yes |
 | <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id) | Log Analytics Workspace ID for diagnostic settings. | `string` | `null` | no |

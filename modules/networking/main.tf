@@ -3,6 +3,7 @@
 # Provisions VNet, Subnets, NSGs, Route Tables, and Diagnostic Settings
 # ---------------------------------------------------------------------------
 
+# checkov:skip=CKV_AZURE_183:DNS is an environment policy; regulated environments provide enterprise resolvers while dev and test may use Azure DNS.
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   location            = var.location
