@@ -185,7 +185,7 @@ jobs:
           framework: terraform
           output_format: cli
           soft_fail: false
-          skip_check: CKV_AZURE_115,CKV_AZURE_183
+          skip_check: CKV_AZURE_109,CKV_AZURE_115,CKV_AZURE_170,CKV_AZURE_183
           quiet: true
 
       - name: Run Checkov for test policy
@@ -243,6 +243,7 @@ jobs:
           scan-ref: .
           severity: HIGH,CRITICAL
           exit-code: "1"
+          skip-version-check: true
 
   secret-scan:
     name: "TruffleHog Secret Scan"

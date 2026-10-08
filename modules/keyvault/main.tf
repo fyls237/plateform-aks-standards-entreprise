@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------
 
 resource "azurerm_key_vault" "key_vault" {
-  # trivy:ignore:AZU-0013 reason:Network ACL mode is selected by environment; dev intentionally allows Azure services while regulated environments use Deny.
+  #trivy:ignore:AVD-AZU-0013 reason:Network ACL mode is selected by environment; dev intentionally allows Azure services while regulated environments use Deny.
   name                = var.name
   location            = var.location
   resource_group_name = var.resource_group_name

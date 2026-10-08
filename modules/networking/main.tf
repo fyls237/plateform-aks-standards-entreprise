@@ -28,6 +28,7 @@ resource "azurerm_virtual_network" "vnet" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_subnet" "subnet" {
+  # checkov:skip=CKV2_AZURE_31:Subnet-to-NSG associations are created separately from the network_security_groups map and cannot be resolved by Checkov through the dynamic association.
   for_each = var.subnets
 
   name                                          = each.key
@@ -57,7 +58,7 @@ resource "azurerm_subnet" "subnet" {
 # ---------------------------------------------------------------------------
 
 resource "azurerm_network_security_group" "nsg" {
-  # trivy:ignore:AZU-0047 reason:NSG rules are supplied by each environment; dev/test have approved public test ingress while preprod/prod use restricted rules.
+  #trivy:ignore:AVD-AZU-0047 reason:NSG rules are supplied by each environment; dev/test have approved public test ingress while preprod/prod use restricted rules.
   for_each = var.network_security_groups
 
   name                = each.key

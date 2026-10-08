@@ -3,7 +3,7 @@
 # Enterprise AKS Cluster with CNI Overlay, Workload Identity, Azure RBAC
 # ---------------------------------------------------------------------------
 
-# trivy:ignore:AZU-0041 reason:API exposure is enforced by each environment; public dev/test require authorized CIDRs and preprod/prod are private.
+#trivy:ignore:AVD-AZU-0041 reason:API exposure is enforced by each environment; public dev/test require authorized CIDRs and preprod/prod are private.
 resource "azurerm_kubernetes_cluster" "aks" {
   # checkov:skip=CKV_AZURE_115:Private cluster mode is enforced by the target environment; dev and test intentionally use a public API.
   # checkov:skip=CKV_AZURE_117:Customer-managed disk encryption is supplied by regulated environments through disk_encryption_set_id.
