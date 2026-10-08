@@ -61,7 +61,7 @@ locals {
 # Resource Group
 # ---------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "this" {
+resource "azurerm_resource_group" "rg" {
   name     = "rg-${local.name_prefix}"
   location = var.location
   tags     = local.tags
@@ -74,8 +74,8 @@ resource "azurerm_resource_group" "this" {
 module "networking" {
   source = "../../modules/networking"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   vnet_name          = "vnet-${local.name_prefix}"
   vnet_address_space = ["10.202.0.0/16"]
@@ -131,7 +131,7 @@ module "networking" {
 module "private_dns" {
   source = "../../modules/private-dns"
 
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = azurerm_resource_group.rg.name
 
   dns_zones = {
     "privatelink.azurecr.io" = {
@@ -165,8 +165,8 @@ module "log_analytics" {
   source = "../../modules/log-analytics"
 
   name                = "log-${local.name_prefix}"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   tags = local.tags
 }
@@ -174,8 +174,8 @@ module "log_analytics" {
 module "identities" {
   source = "../../modules/identities"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   managed_identities = {
     "id-aks-${local.name_prefix}"     = {}
@@ -212,8 +212,8 @@ module "keyvault" {
   source = "../../modules/keyvault"
 
   name                = "kv-${local.name_prefix}"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   network_acls = {
@@ -232,8 +232,8 @@ module "acr" {
   source = "../../modules/acr"
 
   name                          = replace("acr${var.project}priv", "-", "")
-  resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
+  resource_group_name           = azurerm_resource_group.rg.name
+  location                      = azurerm_resource_group.rg.location
   sku                           = "Premium"
   public_network_access_enabled = false
 
@@ -252,9 +252,9 @@ module "aks" {
   source = "../../modules/aks"
 
   cluster_name        = "aks-${local.name_prefix}"
-  resource_group_name = azurerm_resource_group.this.name
-  resource_group_id   = azurerm_resource_group.this.id
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_id   = azurerm_resource_group.rg.id
+  location            = azurerm_resource_group.rg.location
 
   vnet_subnet_id = module.networking.subnet_ids["snet-aks-nodes"]
 

@@ -5,7 +5,7 @@
 
 data "azurerm_client_config" "current" {}
 
-resource "azurerm_resource_group" "this" {
+resource "azurerm_resource_group" "rg" {
   name     = local.resource_group_name
   location = local.location
   tags     = local.default_tags
@@ -18,8 +18,8 @@ resource "azurerm_resource_group" "this" {
 module "networking" {
   source = "../../modules/networking"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   vnet_name          = local.vnet_name
   vnet_address_space = ["10.100.0.0/16"]
@@ -67,8 +67,8 @@ module "log_analytics" {
   source = "../../modules/log-analytics"
 
   name                = local.log_analytics_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   retention_in_days         = 30
   enable_container_insights = true
@@ -83,8 +83,8 @@ module "log_analytics" {
 module "identities" {
   source = "../../modules/identities"
 
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
   managed_identities = {
     "id-aks-${local.name_prefix}"     = {}
@@ -120,8 +120,8 @@ module "keyvault" {
   source = "../../modules/keyvault"
 
   name                = local.keyvault_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   # Dev: relaxed network ACLs
@@ -144,8 +144,8 @@ module "acr" {
   source = "../../modules/acr"
 
   name                = local.acr_name
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   sku                 = "Premium"
 
   enable_diagnostics         = true
@@ -162,9 +162,9 @@ module "aks" {
   source = "../../modules/aks"
 
   cluster_name        = local.aks_cluster_name
-  resource_group_name = azurerm_resource_group.this.name
-  resource_group_id   = azurerm_resource_group.this.id
-  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_id   = azurerm_resource_group.rg.id
+  location            = azurerm_resource_group.rg.location
 
   # Networking
   vnet_subnet_id = module.networking.subnet_ids["snet-aks-nodes"]
@@ -229,8 +229,8 @@ module "aks" {
 module "monitor" {
   source = "../../modules/monitor"
 
-  resource_group_name        = azurerm_resource_group.this.name
-  location                   = azurerm_resource_group.this.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
   log_analytics_workspace_id = module.log_analytics.workspace_id
   aks_cluster_id             = module.aks.cluster_id
 
