@@ -168,7 +168,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12.3129.0
+        uses: bridgecrewio/checkov-action@v12.3130.0
         with:
           directory: modules/
           framework: terraform
@@ -179,7 +179,7 @@ jobs:
           quiet: true
 
       - name: Run Checkov for dev policy
-        uses: bridgecrewio/checkov-action@v12.3126.0
+        uses: bridgecrewio/checkov-action@v12.3130.0
         with:
           directory: environments/dev
           framework: terraform
@@ -189,7 +189,7 @@ jobs:
           quiet: true
 
       - name: Run Checkov for test policy
-        uses: bridgecrewio/checkov-action@v12.3126.0
+        uses: bridgecrewio/checkov-action@v12.3130.0
         with:
           directory: environments/test
           framework: terraform
@@ -199,7 +199,7 @@ jobs:
           quiet: true
 
       - name: Run Checkov for preprod policy
-        uses: bridgecrewio/checkov-action@v12.3126.0
+        uses: bridgecrewio/checkov-action@v12.3130.0
         with:
           directory: environments/preprod
           framework: terraform
@@ -208,7 +208,7 @@ jobs:
           quiet: true
 
       - name: Run Checkov for prod policy
-        uses: bridgecrewio/checkov-action@v12.3126.0
+        uses: bridgecrewio/checkov-action@v12.3130.0
         with:
           directory: environments/prod
           framework: terraform
